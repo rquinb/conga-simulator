@@ -41,6 +41,16 @@ class Hand:
         self.games = []
         self.is_hand = is_hand
 
+    def sort_cards(self, cards):
+        cards.sort(key=lambda x: x.number)
+        return cards
+
+    def group_cards_by_kind(self, cards):
+        kind_groups = {}
+        for kind in {[card.kind for card in cards]}:
+            kind_groups[kind] = [card for card in cards if card.kind == kind]
+        return kind_groups
+
     def receive_card(self, card):
         if len(self.cards) < self.CARD_LIMIT or (len(self.cards) < self.CARD_LIMIT + 1 and self.is_hand):
             self.cards.append(card)
@@ -76,3 +86,48 @@ class Deck:
 
     def shuffle_deck(self):
         self._shuffle_cards(self.cards)
+
+
+class Game:
+    MIN_EQUAL_CARD_NUMBER_FOR_GAME = 3
+    def __init__(self):
+        pass
+
+    def cards_with_same_number(self, hand):
+        same_number_cards = []
+        for card in hand.cards:
+            equal_cards = [card for current_card in hand.cards if card.number == current_card.number]
+            if len(equal_cards) >= self.MIN_EQUAL_CARD_NUMBER_FOR_GAME:
+                same_number_cards.append(equal_cards)
+        return same_number_cards
+
+    def cards_with_ladder(self, hand):
+        kind_groups = hand.group_cards_by_kind(hand.cards)
+        cards_with_ladder = []
+        for kind in kind_groups.keys():
+            consecutive_numbers = 0
+            last_card = Card()
+            consecutive_cards = []
+            sorted_cards = hand.sort_cards(kind_groups[kind])
+            for index, card in enumerate(sorted_cards):
+                if not last_card.number:
+                    last_card = card
+                    consecutive_cards.append(last_card)
+                    consecutive_numbers += 1
+                elif card.number - last_card.number == 1:
+                    consecutive_numbers += 1
+                    consecutive_cards.append(card)
+                else:
+                    last_card = card
+                    consecutive_cards = [last_card]
+                    consecutive_numbers = 1
+            if consecutive_cards >= self.MIN_EQUAL_CARD_NUMBER_FOR_GAME:
+                cards_with_ladder.append(consecutive_cards)
+        return consecutive_cards
+
+
+
+
+
+
+
