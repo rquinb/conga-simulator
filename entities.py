@@ -1,10 +1,27 @@
+import random
 import game_exceptions
+
+KINDS = ["E", "O", "B", "C"]
+MAX_NUMBER = 12
+MAX_COMMODINES = 2
 
 class Card:
     def __init__(self, number=None, kind=None, commodin=False):
-        self.number = number
-        self.kind = kind
-        self.commodin=commodin
+        self.number = self._set_number(number)
+        self.kind = self._set_kind(kind)
+        self.commodin= commodin
+
+    def _set_number(self, number):
+        if number <= MAX_NUMBER:
+            self.number = number
+        else:
+            raise game_exceptions.InvalidCardNumber(f"Please provide a number less than or equal to {MAX_NUMBER}")
+
+    def _set_kind(self, kind):
+        if kind in KINDS:
+            self.kind = kind
+        else:
+            raise game_exceptions.InvalidCardKind(f"Please provide a valid kind: It should be one of {KINDS}")
 
     def __eq__(self, other_card):
         return self.number == other_card.number and self.kind == other_card.kind
@@ -18,7 +35,7 @@ class Hand:
         self.is_hand = is_hand
 
     def receive_card(self, card):
-        if len(self.cards) < 7 or (len(self.cards) < 8 and self.is_hand):
+        if len(self.cards) < self.CARD_LIMIT or (len(self.cards) < self.CARD_LIMIT + 1 and self.is_hand):
             self.cards.append(card)
         else:
             raise game_exceptions.CardLimitException
@@ -26,5 +43,29 @@ class Hand:
     def drop_card(self, card):
         for index, current_card in enumerate(self.cards):
             if current_card == card:
-                self.cards.pop(index)
+                return self.cards.pop(index)
+        return None
 
+
+class Deck:
+    def __init__(self):
+        self.cards = self._initialize_deck()
+
+    def _initialize_deck(self):
+        cards = []
+        # Adds all non-commpdin cards
+        for number in range(1,MAX_NUMBER + 1):
+            for kind in KINDS:
+                cards.append(Card(number, kind))
+        # Adds commodins
+        for _ in range(MAX_COMMODINES):
+            cards.append(Card(commodin=True))
+
+        self.cards = self._shuffle_cards(cards)
+
+    @staticmethod
+    def _shuffle_cards(cards):
+        return random.shuffle(cards)
+
+    def shuffle_deck(self):
+        self.cards = self._shuffle_cards(self.cards)
