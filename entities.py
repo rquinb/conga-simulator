@@ -47,7 +47,7 @@ class Hand:
 
     def group_cards_by_kind(self, cards):
         kind_groups = {}
-        for kind in {[card.kind for card in cards]}:
+        for kind in {card.kind for card in cards}:
             kind_groups[kind] = [card for card in cards if card.kind == kind]
         return kind_groups
 
@@ -95,10 +95,14 @@ class Game:
 
     def cards_with_same_number(self, hand):
         same_number_cards = []
-        for card in hand.cards:
-            equal_cards = [card for current_card in hand.cards if card.number == current_card.number]
+        available_cards = hand.cards
+        while available_cards:
+            next_card = available_cards[0]
+            equal_cards = [card for card in available_cards if card.number == next_card.number]
             if len(equal_cards) >= self.MIN_EQUAL_CARD_NUMBER_FOR_GAME:
                 same_number_cards.append(equal_cards)
+            # Delete processed cards from available list
+            available_cards = [card for card in available_cards if card not in equal_cards]
         return same_number_cards
 
     def cards_with_ladder(self, hand):
@@ -115,16 +119,31 @@ class Game:
                     consecutive_cards.append(last_card)
                     consecutive_numbers += 1
                 elif card.number - last_card.number == 1:
+                    last_card = card
                     consecutive_numbers += 1
                     consecutive_cards.append(card)
                 else:
                     last_card = card
+                    if len(consecutive_cards) >= self.MIN_EQUAL_CARD_NUMBER_FOR_GAME:
+                        cards_with_ladder.append(consecutive_cards)
                     consecutive_cards = [last_card]
                     consecutive_numbers = 1
-            if consecutive_cards >= self.MIN_EQUAL_CARD_NUMBER_FOR_GAME:
-                cards_with_ladder.append(consecutive_cards)
-        return consecutive_cards
+        return cards_with_ladder
 
+hand = Hand()
+game = Game()
+
+hand.receive_card(Card(1,"O"))
+hand.receive_card(Card(1,"B"))
+hand.receive_card(Card(1,"C"))
+hand.receive_card(Card(3,"O"))
+hand.receive_card(Card(4,"O"))
+hand.receive_card(Card(5,"O"))
+hand.receive_card(Card(9,"O"))
+
+same = game.cards_with_same_number(hand)
+ladder = game.cards_with_ladder(hand)
+print(same)
 
 
 
