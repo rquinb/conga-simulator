@@ -24,7 +24,7 @@ class Card:
             raise game_exceptions.InvalidCardKind(f"Please provide a valid kind: It should be one of {KINDS}")
 
     def to_string(self):
-        return f"{self.number} de {KINDS.get(self.kind)}" if not self.commodin else "Commodin"
+        return f"{self.number} de {KINDS.get(self.kind)}" if not self.commodin else "Comodin"
 
     def __str__(self):
         return self.to_string()
@@ -124,10 +124,10 @@ class Game:
                     consecutive_cards.append(card)
                 else:
                     last_card = card
-                    if len(consecutive_cards) >= self.MIN_EQUAL_CARD_NUMBER_FOR_GAME:
-                        cards_with_ladder.append(consecutive_cards)
                     consecutive_cards = [last_card]
                     consecutive_numbers = 1
+                if len(consecutive_cards) >= self.MIN_EQUAL_CARD_NUMBER_FOR_GAME:
+                    cards_with_ladder.append(consecutive_cards)
         return cards_with_ladder
 
 

@@ -17,13 +17,13 @@ def get_deck():
 def detect_games():
     game = Game()
     hand = Hand()
-    hand.receive_card(Card(1, "O"))
-    hand.receive_card(Card(1, "B"))
     hand.receive_card(Card(1, "C"))
-    hand.receive_card(Card(3, "O"))
-    hand.receive_card(Card(4, "O"))
-    hand.receive_card(Card(5, "O"))
-    hand.receive_card(Card(9, "O"))
+    hand.receive_card(Card(2, "C"))
+    hand.receive_card(Card(3, "C"))
+    hand.receive_card(Card(7, "E"))
+    hand.receive_card(Card(9, "E"))
+    hand.receive_card(Card(7, "O"))
+    hand.receive_card(Card(5, "B"))
     same = []
     ladder = []
     for found_game in game.cards_with_same_number(hand):
