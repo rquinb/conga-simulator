@@ -130,20 +130,6 @@ class Game:
                     consecutive_numbers = 1
         return cards_with_ladder
 
-hand = Hand()
-game = Game()
-
-hand.receive_card(Card(1,"O"))
-hand.receive_card(Card(1,"B"))
-hand.receive_card(Card(1,"C"))
-hand.receive_card(Card(3,"O"))
-hand.receive_card(Card(4,"O"))
-hand.receive_card(Card(5,"O"))
-hand.receive_card(Card(9,"O"))
-
-same = game.cards_with_same_number(hand)
-ladder = game.cards_with_ladder(hand)
-print(same)
 
 
 
