@@ -1,0 +1,2 @@
+class CardLimitException(Exception):
+    pass
