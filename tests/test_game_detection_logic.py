@@ -1,11 +1,10 @@
-import entities.
 from entities import Card, Hand, Game
 
 class TestGameDetection:
 
     def _initialize_hand(self, style=None):
         hand = Hand()
-        if style == "one_same_number_game_one_ladder"
+        if style == "one_same_number_game_one_ladder":
             hand.receive_card(Card(1, "O"))
             hand.receive_card(Card(1, "B"))
             hand.receive_card(Card(1, "C"))
