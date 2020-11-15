@@ -1,7 +1,7 @@
 import random
 import game_exceptions
 
-KINDS = ["E", "O", "B", "C"]
+KINDS = {"E":"espada", "O": "oro", "B": "basto", "C": "copa"}
 MAX_NUMBER = 12
 MAX_COMMODINES = 2
 
@@ -18,13 +18,13 @@ class Card:
             raise game_exceptions.InvalidCardNumber(f"Please provide a number less than or equal to {MAX_NUMBER}")
 
     def _set_kind(self, kind):
-        if kind in KINDS:
+        if kind in KINDS.keys():
             return kind
         else:
             raise game_exceptions.InvalidCardKind(f"Please provide a valid kind: It should be one of {KINDS}")
 
     def to_string(self):
-        return f"{self.number} of {self.kind}" if not self.commodin else "Commodin"
+        return f"{self.number} de {KINDS.get(self.kind)}" if not self.commodin else "Commodin"
 
     def __str__(self):
         return self.to_string()
@@ -62,12 +62,11 @@ class Deck:
         cards = []
         # Adds all non-commpdin cards
         for number in range(1,MAX_NUMBER + 1):
-            for kind in KINDS:
+            for kind in KINDS.keys():
                 cards.append(Card(number, kind))
         # Adds commodins
         for _ in range(MAX_COMMODINES):
             cards.append(Card(commodin=True))
-
         self._shuffle_cards(cards)
         return cards
 
