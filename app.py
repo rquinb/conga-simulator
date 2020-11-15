@@ -1,5 +1,5 @@
 import flask
-import entities
+from entities import Card, Hand, Deck, Game
 
 
 app = flask.Flask(__name__)
@@ -10,8 +10,28 @@ def home_page():
 
 @app.route('/deck', methods=['GET'])
 def get_deck():
-    deck = entities.Deck()
+    deck = Deck()
     return flask.jsonify({"cards": [card.to_string() for card in deck.cards]})
+
+@app.route('/games-detection', methods=['GET'])
+def detect_games():
+    game = Game()
+    hand = Hand()
+    hand.receive_card(Card(1, "O"))
+    hand.receive_card(Card(1, "B"))
+    hand.receive_card(Card(1, "C"))
+    hand.receive_card(Card(3, "O"))
+    hand.receive_card(Card(4, "O"))
+    hand.receive_card(Card(5, "O"))
+    hand.receive_card(Card(9, "O"))
+    same = []
+    ladder = []
+    for found_game in game.cards_with_same_number(hand):
+        same.append([card.to_string() for card in found_game])
+    for found_game in game.cards_with_ladder(hand):
+        ladder.append([card.to_string() for card in found_game])
+    return flask.jsonify({"games":{"same_number":same, "ladder": ladder}})
+
 
 if __name__ == '__main__':
     app.run(debug=True)
