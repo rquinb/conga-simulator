@@ -109,30 +109,22 @@ class Game:
         kind_groups = hand.group_cards_by_kind(hand.cards)
         cards_with_ladder = []
         for kind in kind_groups.keys():
-            consecutive_numbers = 0
-            last_card = Card()
             consecutive_cards = []
+            last_card = Card()
             sorted_cards = hand.sort_cards(kind_groups[kind])
             for index, card in enumerate(sorted_cards):
                 if not last_card.number:
                     last_card = card
                     consecutive_cards.append(last_card)
-                    consecutive_numbers += 1
                 elif card.number - last_card.number == 1:
                     last_card = card
-                    consecutive_numbers += 1
                     consecutive_cards.append(card)
+                    if  index == len(sorted_cards) - 1 and len(consecutive_cards) >= self.MIN_EQUAL_CARD_NUMBER_FOR_GAME:
+                        cards_with_ladder.append(consecutive_cards)
                 else:
+                    if len(consecutive_cards) >= self.MIN_EQUAL_CARD_NUMBER_FOR_GAME:
+                        cards_with_ladder.append(consecutive_cards)
                     last_card = card
                     consecutive_cards = [last_card]
-                    consecutive_numbers = 1
-                if len(consecutive_cards) >= self.MIN_EQUAL_CARD_NUMBER_FOR_GAME:
-                    cards_with_ladder.append(consecutive_cards)
+
         return cards_with_ladder
-
-
-
-
-
-
-
