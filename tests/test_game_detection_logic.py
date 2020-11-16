@@ -1,4 +1,4 @@
-from entities import Card, Hand, Game
+from entities import Card, Hand, GamesDetector
 
 class TestGameDetection:
 
@@ -39,18 +39,18 @@ class TestGameDetection:
         return hand
 
     def test_two_same_number_game_detection(self):
-        game = Game()
+        game_detector = GamesDetector()
         hand = self._initialize_hand("two_same_number_game_no_ladder")
-        same = game.cards_with_same_number(hand)
+        same = game_detector.cards_with_same_number(hand)
         for game in same:
             first_card = game[0]
             same_number_cards = [card for card in game if card.number == first_card.number]
             assert len(same_number_cards) >= game.MIN_EQUAL_CARD_NUMBER_FOR_GAME
 
     def test_correct_detection_of_both_same_number_games(self):
-        game = Game()
+        game_detector = GamesDetector()
         hand = self._initialize_hand("two_same_number_game_no_ladder")
-        same = game.cards_with_same_number(hand)
+        same = game_detector.cards_with_same_number(hand)
         assert len(same) == 2
 
 

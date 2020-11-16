@@ -87,8 +87,20 @@ class Deck:
     def shuffle_deck(self):
         self._shuffle_cards(self.cards)
 
+    def retrieve_card(self):
+        if len(self.cards) == 0:
+            self.cards = self._initialize_deck()
+        return self.cards.pop()
 
-class Game:
+    def create_hand(self, is_hand=False):
+        hand = Hand(is_hand=is_hand)
+        while True:
+            try:
+                hand.receive_card(self.retrieve_card())
+            except game_exceptions.CardLimitException:
+                return hand
+
+class GamesDetector:
     MIN_EQUAL_CARD_NUMBER_FOR_GAME = 3
     def __init__(self):
         pass
@@ -128,3 +140,30 @@ class Game:
                     consecutive_cards = [last_card]
 
         return cards_with_ladder
+
+
+class Player:
+    def __init__(self, name):
+        self.name = name
+        self.hand = None
+        self.score = 0
+        self.winner = False
+
+    def assign_hand(self, hand):
+        self.hand = hand
+
+    def add_points(self, points):
+        self.score += points
+
+    def remove_points(self, points):
+        self.score -= points
+
+
+class Game:
+    def __init__(self, player_1, player_2):
+        self.player_1 = player_1
+        self.player_2 = player_2
+        self.deck = Deck()
+        self.results = []
+
+
