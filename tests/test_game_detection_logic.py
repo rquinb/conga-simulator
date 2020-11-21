@@ -1,4 +1,5 @@
-from entities import Card, Hand, GamesDetector
+from entities.game_entities import Card, Hand
+from entities.card_processors import GamesDetector
 
 class TestGameDetection:
 
@@ -52,6 +53,4 @@ class TestGameDetection:
         hand = self._initialize_hand("two_same_number_game_no_ladder")
         same = game_detector.cards_with_same_number(hand)
         assert len(same) == 2
-
-
 

@@ -6,3 +6,12 @@ class InvalidCardNumber(Exception):
 
 class InvalidCardKind(Exception):
     pass
+
+class InvalidElementInList(Exception):
+    pass
+
+class CardNotFound(Exception):
+    pass
+
+class EmptyListOfCards(Exception):
+    pass

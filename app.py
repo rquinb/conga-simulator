@@ -1,5 +1,6 @@
 import flask
-from entities import Card, Hand, Deck, GamesDetector
+from entities.game_entities import Card, Hand, Deck
+from entities.card_processors import GamesDetector
 
 
 app = flask.Flask(__name__)

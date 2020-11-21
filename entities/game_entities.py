@@ -1,5 +1,6 @@
 import random
 import game_exceptions
+from collections import Sequence
 
 KINDS = {"E":"espada", "O": "oro", "B": "basto", "C": "copa"}
 MAX_NUMBER = 12
@@ -26,6 +27,9 @@ class Card:
     def to_string(self):
         return f"{self.number} de {KINDS.get(self.kind)}" if not self.commodin else "Comodin"
 
+    def to_dict(self):
+        return self.__dict__
+
     def __str__(self):
         return self.to_string()
 
@@ -33,35 +37,70 @@ class Card:
         return self.number == other_card.number and self.kind == other_card.kind
 
 
+class Cards(Sequence):
+    def __init__(self):
+        self._cards_list = []
+
+    def __len__(self):
+        return len(self._cards_list)
+
+    def __getitem__(self, index):
+        return self._cards_list[index]
+
+    @staticmethod
+    def from_list_of_cards(cards_list):
+        cards = Cards()
+        for card in cards_list:
+            cards.receive_card(card)
+        return cards
+
+    def sort(self):
+        self._cards_list.sort(key=lambda x: x.number)
+
+    def receive_card(self, card):
+        if isinstance(card, Card):
+            self._cards_list.append(card)
+        else:
+            raise TypeError('Please provide a Card object')
+
+    def drop_card(self, card=None):
+        if card:
+            for index, current_card in enumerate(self._cards_list):
+                if current_card == card:
+                    return self._cards_list.pop(index)
+            raise game_exceptions.CardNotFound(f'Card: {card} was not found in list. Cannot drop')
+        elif self._cards_list:
+            return self._cards_list.pop()
+        else:
+            raise game_exceptions.EmptyListOfCards('Card list is empty. Cannot remove more cards')
+
+    def group_by_kind(self):
+        kind_groups = {}
+        for kind in {card.kind for card in self._cards_list}:
+            kind_groups[kind] = Cards.from_list_of_cards([card for card in self._cards_list if card.kind == kind])
+        return kind_groups
+
+    def shuffle_cards(self):
+        random.shuffle(self._cards_list)
+
 
 class Hand:
     CARD_LIMIT = 7
     def __init__(self, is_hand=False):
-        self.cards = []
+        self.cards = Cards()
         self.games = []
+        self.cards_combinations = []
         self.is_hand = is_hand
 
-    def sort_cards(self, cards):
-        cards.sort(key=lambda x: x.number)
-        return cards
-
-    def group_cards_by_kind(self, cards):
-        kind_groups = {}
-        for kind in {card.kind for card in cards}:
-            kind_groups[kind] = [card for card in cards if card.kind == kind]
-        return kind_groups
 
     def receive_card(self, card):
         if len(self.cards) < self.CARD_LIMIT or (len(self.cards) < self.CARD_LIMIT + 1 and self.is_hand):
-            self.cards.append(card)
+            self.cards.receive_card(card)
         else:
             raise game_exceptions.CardLimitException
 
     def drop_card(self, card):
-        for index, current_card in enumerate(self.cards):
-            if current_card == card:
-                return self.cards.pop(index)
-        return None
+        return self.cards.drop_card(card)
 
 
 class Deck:
@@ -74,23 +113,17 @@ class Deck:
         for number in range(1,MAX_NUMBER + 1):
             for kind in KINDS.keys():
                 cards.append(Card(number, kind))
-        # Adds commodins
+        # Adds commodines
         for _ in range(MAX_COMMODINES):
             cards.append(Card(commodin=True))
-        self._shuffle_cards(cards)
+        cards = Cards.from_list_of_cards(cards)
+        cards.shuffle_cards()
         return cards
 
-    @staticmethod
-    def _shuffle_cards(cards):
-        random.shuffle(cards)
-
-    def shuffle_deck(self):
-        self._shuffle_cards(self.cards)
-
     def retrieve_card(self):
-        if len(self.cards) == 0:
+        if not self.cards:
             self.cards = self._initialize_deck()
-        return self.cards.pop()
+        return self.cards.drop_card()
 
     def create_hand(self, is_hand=False):
         hand = Hand(is_hand=is_hand)
@@ -98,48 +131,8 @@ class Deck:
             try:
                 hand.receive_card(self.retrieve_card())
             except game_exceptions.CardLimitException:
-                return hand
-
-class GamesDetector:
-    MIN_EQUAL_CARD_NUMBER_FOR_GAME = 3
-    def __init__(self):
-        pass
-
-    def cards_with_same_number(self, hand):
-        same_number_cards = []
-        available_cards = hand.cards
-        while available_cards:
-            next_card = available_cards[0]
-            equal_cards = [card for card in available_cards if card.number == next_card.number]
-            if len(equal_cards) >= self.MIN_EQUAL_CARD_NUMBER_FOR_GAME:
-                same_number_cards.append(equal_cards)
-            # Delete processed cards from available list
-            available_cards = [card for card in available_cards if card not in equal_cards]
-        return same_number_cards
-
-    def cards_with_ladder(self, hand):
-        kind_groups = hand.group_cards_by_kind(hand.cards)
-        cards_with_ladder = []
-        for kind in kind_groups.keys():
-            consecutive_cards = []
-            last_card = Card()
-            sorted_cards = hand.sort_cards(kind_groups[kind])
-            for index, card in enumerate(sorted_cards):
-                if not last_card.number:
-                    last_card = card
-                    consecutive_cards.append(last_card)
-                elif card.number - last_card.number == 1:
-                    last_card = card
-                    consecutive_cards.append(card)
-                    if  index == len(sorted_cards) - 1 and len(consecutive_cards) >= self.MIN_EQUAL_CARD_NUMBER_FOR_GAME:
-                        cards_with_ladder.append(consecutive_cards)
-                else:
-                    if len(consecutive_cards) >= self.MIN_EQUAL_CARD_NUMBER_FOR_GAME:
-                        cards_with_ladder.append(consecutive_cards)
-                    last_card = card
-                    consecutive_cards = [last_card]
-
-        return cards_with_ladder
+                break
+        return hand
 
 
 class Player:
