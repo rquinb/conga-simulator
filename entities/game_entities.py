@@ -61,6 +61,9 @@ class Cards(Sequence):
         else:
             return None
 
+    def get_copy(self):
+        return Cards.from_list_of_cards(self._cards_list)
+
     def sort(self):
         self._cards_list.sort(key=lambda x: x.number)
 
@@ -119,7 +122,8 @@ class CardGroup:
 
 class Deck:
     def __init__(self):
-        self.cards = self._initialize_deck()
+        self.cards_in_deck = self._initialize_deck()
+        self.dropped_cards = Cards()
 
     def _initialize_deck(self):
         cards = []
@@ -127,21 +131,21 @@ class Deck:
         for number in range(1,MAX_NUMBER + 1):
             for kind in KINDS.keys():
                 cards.append(Card(number, kind))
-        # Adds commodines
-        for _ in range(MAX_COMMODINES):
-            cards.append(Card(commodin=True))
         cards = Cards.from_list_of_cards(cards)
         cards.shuffle_cards()
         return cards
 
     def retrieve_card(self):
-        if not self.cards:
-            self.cards = self._initialize_deck()
-        return self.cards.drop_cards()
+        if not self.cards_in_deck:
+            self.cards_in_deck = self._initialize_deck()
+            self.dropped_cards = Cards()
+        return self.cards_in_deck.drop_cards()
+
+    def play_card(self, card):
+        self.dropped_cards.receive_card(card)
 
 
 class Player:
-    CARD_LIMIT = 7
     def __init__(self, name, is_hand=False):
         self.cards = Cards()
         self.name = name
@@ -149,19 +153,7 @@ class Player:
         self.score = 0
         self.winner = False
         self.has_cut = False
-
-    def receive_hand(self, cards):
-        for card in cards:
-            self.receive_card(card)
-
-    def receive_card(self, card):
-        if len(self.cards) < self.CARD_LIMIT or (len(self.cards) < self.CARD_LIMIT + 1 and self.is_hand):
-            self.cards.receive_card(card)
-        else:
-            raise game_exceptions.CardLimitException
-
-    def drop_card(self, card):
-        return self.cards.drop_cards(card)
+        self.move = 0
 
     def add_points(self, points):
         self.score += points
@@ -179,5 +171,3 @@ class Game:
         self.player_2 = player_2
         self.deck = Deck()
         self.results = []
-
-
