@@ -117,25 +117,6 @@ class CardGroup:
         return value
 
 
-class Hand:
-    CARD_LIMIT = 7
-    def __init__(self, is_hand=False):
-        self.cards = Cards()
-        self.games = []
-        self.cards_combinations = []
-        self.is_hand = is_hand
-
-
-    def receive_card(self, card):
-        if len(self.cards) < self.CARD_LIMIT or (len(self.cards) < self.CARD_LIMIT + 1 and self.is_hand):
-            self.cards.receive_card(card)
-        else:
-            raise game_exceptions.CardLimitException
-
-    def drop_card(self, card):
-        return self.cards.drop_cards(card)
-
-
 class Deck:
     def __init__(self):
         self.cards = self._initialize_deck()
@@ -158,31 +139,38 @@ class Deck:
             self.cards = self._initialize_deck()
         return self.cards.drop_cards()
 
-    def create_hand(self, is_hand=False):
-        hand = Hand(is_hand=is_hand)
-        while True:
-            try:
-                hand.receive_card(self.retrieve_card())
-            except game_exceptions.CardLimitException:
-                break
-        return hand
-
 
 class Player:
-    def __init__(self, name):
+    CARD_LIMIT = 7
+    def __init__(self, name, is_hand=False):
+        self.cards = Cards()
         self.name = name
-        self.hand = None
+        self.is_hand = is_hand
         self.score = 0
         self.winner = False
+        self.has_cut = False
 
-    def assign_hand(self, hand):
-        self.hand = hand
+    def receive_hand(self, cards):
+        for card in cards:
+            self.receive_card(card)
+
+    def receive_card(self, card):
+        if len(self.cards) < self.CARD_LIMIT or (len(self.cards) < self.CARD_LIMIT + 1 and self.is_hand):
+            self.cards.receive_card(card)
+        else:
+            raise game_exceptions.CardLimitException
+
+    def drop_card(self, card):
+        return self.cards.drop_cards(card)
 
     def add_points(self, points):
         self.score += points
 
     def remove_points(self, points):
         self.score -= points
+
+    def cut(self):
+        self.has_cut = True
 
 
 class Game:
