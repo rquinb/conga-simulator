@@ -1,4 +1,4 @@
-from entities.game_entities import Card, Cards
+from entities.game_entities import Card, Cards, CardGroup
 
 
 class GamesDetector:
@@ -47,15 +47,16 @@ class CardsGrouper:
         self.games_detector = GamesDetector()
 
     def group_by_games_found(self, cards):
-        groupes = {'games':[], "rest":Cards()}
+        games = []
+        rest = Cards()
         same_number = self.games_detector.cards_with_same_number(cards)
         # Remove "same number games" cards from collection
         for same_number_cards in same_number:
-             groupes['games'].append(cards.drop_cards(same_number_cards))
+             games.append(cards.drop_cards(same_number_cards))
         ladders = self.games_detector.cards_with_ladder(cards)
         # Remove "ladder" cards from collection
         for ladder in ladders:
-            groupes['games'].append(cards.drop_cards(ladder))
+            games.append(cards.drop_cards(ladder))
         # Add ungrouped rest of cards to groupes list
-        groupes['rest'] = cards
-        return groupes
+        card_group = CardGroup(games=games, rest=cards)
+        return card_group

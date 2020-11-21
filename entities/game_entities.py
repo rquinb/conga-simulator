@@ -101,6 +101,22 @@ class Cards(Sequence):
         random.shuffle(self._cards_list)
 
 
+class CardGroup:
+    COMMODIN_VALUE = 20
+    ZERO_REST_VALUE = -10
+    def __init__(self, games, rest):
+        self.games = games
+        self.rest = rest
+
+    def value(self):
+        value = 0
+        if not self.rest:
+            return self.ZERO_REST_VALUE
+        for card in self.rest:
+            value += card.number if card.number else self.COMMODIN_VALUE
+        return value
+
+
 class Hand:
     CARD_LIMIT = 7
     def __init__(self, is_hand=False):
