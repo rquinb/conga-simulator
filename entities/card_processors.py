@@ -47,16 +47,15 @@ class CardsGrouper:
         self.games_detector = GamesDetector()
 
     def group_by_games_found(self, cards):
-        groupes = []
+        groupes = {'games':[], "rest":Cards()}
         same_number = self.games_detector.cards_with_same_number(cards)
         # Remove "same number games" cards from collection
         for same_number_cards in same_number:
-             groupes.append(cards.drop_cards(same_number_cards))
+             groupes['games'].append(cards.drop_cards(same_number_cards))
         ladders = self.games_detector.cards_with_ladder(cards)
         # Remove "ladder" cards from collection
         for ladder in ladders:
-            groupes.append(cards.drop_cards(ladder))
+            groupes['games'].append(cards.drop_cards(ladder))
         # Add ungrouped rest of cards to groupes list
-        for card in cards:
-            groupes.append(cards)
+        groupes['rest'] = cards
         return groupes

@@ -54,6 +54,13 @@ class Cards(Sequence):
             cards.receive_card(card)
         return cards
 
+    def _index_of(self, card):
+        for index, current_card in enumerate(self._cards_list):
+            if card ==  current_card:
+                return index
+        else:
+            return None
+
     def sort(self):
         self._cards_list.sort(key=lambda x: x.number)
 
@@ -70,16 +77,15 @@ class Cards(Sequence):
             if isinstance(cards, Card):
                 cards = Cards.from_list_of_cards([cards])
             deleted_cards = []
-            for index, current_card in enumerate(self._cards_list):
-                for card in cards:
-                    if current_card == card:
-                        deleted_cards.append(self._cards_list.pop(index))
-                if not deleted_cards:
-                    raise game_exceptions.CardNotFound(f'Cards not found in list. Cannot drop')
-                elif len(deleted_cards) == 1:
-                    return deleted_cards.pop()
-                else:
-                    return Cards.from_list_of_cards(deleted_cards)
+            for card in cards:
+                if card in self._cards_list:
+                    deleted_cards.append(self._cards_list.pop(self._index_of(card)))
+            if not deleted_cards:
+                raise game_exceptions.CardNotFound(f'Cards not found in list. Cannot drop')
+            elif len(deleted_cards) == 1:
+                return deleted_cards.pop()
+            else:
+                return Cards.from_list_of_cards(deleted_cards)
         elif self._cards_list:
             return self._cards_list.pop()
         else:
@@ -111,7 +117,7 @@ class Hand:
             raise game_exceptions.CardLimitException
 
     def drop_card(self, card):
-        return self.cards.drop_card(card)
+        return self.cards.drop_cards(card)
 
 
 class Deck:
@@ -134,7 +140,7 @@ class Deck:
     def retrieve_card(self):
         if not self.cards:
             self.cards = self._initialize_deck()
-        return self.cards.drop_card()
+        return self.cards.drop_cards()
 
     def create_hand(self, is_hand=False):
         hand = Hand(is_hand=is_hand)
