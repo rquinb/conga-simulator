@@ -63,12 +63,23 @@ class Cards(Sequence):
         else:
             raise TypeError('Please provide a Card object')
 
-    def drop_card(self, card=None):
-        if card:
+    def drop_cards(self, cards=None):
+        if cards:
+            if not (isinstance(cards,Card) or isinstance(cards,Cards)):
+                raise TypeError
+            if isinstance(cards, Card):
+                cards = Cards.from_list_of_cards([cards])
+            deleted_cards = []
             for index, current_card in enumerate(self._cards_list):
-                if current_card == card:
-                    return self._cards_list.pop(index)
-            raise game_exceptions.CardNotFound(f'Card: {card} was not found in list. Cannot drop')
+                for card in cards:
+                    if current_card == card:
+                        deleted_cards.append(self._cards_list.pop(index))
+                if not deleted_cards:
+                    raise game_exceptions.CardNotFound(f'Cards not found in list. Cannot drop')
+                elif len(deleted_cards) == 1:
+                    return deleted_cards.pop()
+                else:
+                    return Cards.from_list_of_cards(deleted_cards)
         elif self._cards_list:
             return self._cards_list.pop()
         else:
