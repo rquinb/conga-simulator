@@ -154,6 +154,7 @@ class Player:
         self.winner = False
         self.has_cut = False
         self.move = 0
+        self.played_dropped_card = False
 
     def add_points(self, points):
         self.score += points

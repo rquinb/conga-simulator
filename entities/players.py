@@ -17,7 +17,7 @@ class ConservativeRandomRest(Player):
         cards_grouper = CardsGrouper()
         return cards_grouper.group_by_games_found(self.cards).value()
 
-    def analyze_card_impact_on_value(self, card):
+    def _analyze_card_impact_on_value(self, card):
         max_card = None
         cards_to_value = self.cards.get_copy()
         cards_to_value.receive_card(card)
@@ -34,10 +34,28 @@ class ConservativeRandomRest(Player):
                                    less_valuable_card=max_card,
                                    has_value_improved=rest_value < self.rest_value )
 
-    def play(self, card):
-        value_analysis = self.analyze_card_impact_on_value(card)
+    def _play(self, card):
+        value_analysis = self._analyze_card_impact_on_value(card)
         self.rest_value = value_analysis.rest_value
         self.cards.receive_card(card)
         if self.rest_value < 10:
             self.cut()
         return self.cards.drop_cards(value_analysis.less_valuable_card)
+
+    def make_move(self, deck):
+        if deck.dropped_cards:
+            candidate_card = deck.dropped_cards.drop_cards()
+            analysis = self._analyze_card_impact_on_value(candidate_card)
+            if analysis.has_value_improved:
+                deck.play_card(self._play(candidate_card))
+                self.played_dropped_card = True
+            else:
+                deck.play_card(candidate_card)
+        if not self.played_dropped_card:
+            candidate_card = deck.retrieve_card()
+            analysis = self._analyze_card_impact_on_value(candidate_card)
+            if analysis.has_value_improved:
+                deck.play_card(self._play(candidate_card))
+            else:
+                deck.play_card(candidate_card)
+        return deck
