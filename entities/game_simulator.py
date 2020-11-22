@@ -1,18 +1,19 @@
-from entities.game_entities import Deck, Game
+from entities.game_entities import Cards, Deck, Game
 from entities.players import ConservativeRandomRest
 
 class GamesSimulator:
 
     @staticmethod
-    def simulate_games(self, number_of_games):
+    def simulate_games(number_of_games):
         games = []
         for _ in range(number_of_games):
             game = Game()
+            players = [ConservativeRandomRest('Matias'), ConservativeRandomRest('Jacque')]
             while True:
                 deck = Deck()
                 current_player = 0
-                players = [ConservativeRandomRest('Matias'), ConservativeRandomRest('Jacque')]
                 for i in range(len(players)):
+                    players[i].cards = Cards()
                     for _ in range(7):
                         players[i].cards.receive_card(deck.retrieve_card())
                     players[i].rest_value = players[i].value_of_current_hand()
@@ -35,14 +36,19 @@ class GamesSimulator:
                         else:
                             deck.play_card(candidate_card)
                     if players[current_player].has_cut:
+                        players[0].score += players[0].rest_value
+                        players[1].score += players[1].rest_value
                         game.results.append(
-                            {"player_1_points": players[0].rest_value, "player_2_points": players[1].rest_value})
+                            {"player_1_points": players[0].score, "player_2_points": players[1].score})
+                        players[current_player].has_cut = False
                         break
                 for index, player in enumerate(players):
-                    if player.rest_value >= 100:
+                    if player.score >= 100:
                         winner_index = 0 if index == 1 else 1
                         game.winner = players[winner_index].name
                         games.append(game)
                         break
+                if game.winner:
+                    break
         return games
 
