@@ -116,7 +116,7 @@ class CardGroup:
         if not self.rest:
             return self.ZERO_REST_VALUE
         for card in self.rest:
-            value += card.number if card.number else self.COMMODIN_VALUE
+            value += card.number if card.number is not None else self.COMMODIN_VALUE
         return value
 
 
