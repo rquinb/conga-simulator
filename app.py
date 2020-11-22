@@ -6,7 +6,7 @@ app = flask.Flask(__name__)
 @app.route('/deck', methods=['GET'])
 def get_deck():
     deck = Deck()
-    return flask.jsonify({"cards": [card.to_string() for card in deck.cards]})
+    return flask.jsonify({"cards": [card.to_string() for card in deck.cards_in_deck]})
 
 if __name__ == '__main__':
-    app.run()
+    app.run(host='0.0.0.0')
