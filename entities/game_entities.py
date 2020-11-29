@@ -174,8 +174,6 @@ class Game:
         self.results = []
 
     def report_results(self):
-        return {"player_1": self.players[0].name,
-                "player_2": self.players[1].name,
-                "score_evolution": self.results,
+        return {"score_evolution": self.results,
                 "winner":self.players[self.winner].name}
 

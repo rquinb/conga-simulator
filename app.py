@@ -18,7 +18,8 @@ def get_simulation():
     player_2_name = flask.request.args.get('player-2')
     games_simulator = GamesSimulator()
     games = games_simulator.simulate_games(number_of_games, player_1_name, player_2_name)
-    return flask.jsonify({"games": [game.report_results() for game in games]})
+    games_statistics = games_simulator.compute_statistics(player_1_name, player_2_name, games)
+    return flask.jsonify({"games": games_statistics})
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0')

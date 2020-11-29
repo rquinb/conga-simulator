@@ -1,3 +1,4 @@
+import numpy as np
 from entities.game_entities import Cards, Deck, Game
 from entities.players import ConservativeRandomRest
 
@@ -48,3 +49,47 @@ class GamesSimulator:
                 game.players[current_player].has_cut = False
                 break
         return game, deck
+
+    def compute_statistics(self,name_player_1, name_player_2, games):
+        games_report = [game.report_results() for game in games]
+        return GameStatistics(name_player_1, name_player_2, games_report).get_statistics()
+
+class GameStatistics:
+    def __init__(self, name_player_1, name_player_2, games_report):
+        self.name_player_1 = name_player_1
+        self.name_player_2 = name_player_2
+        self.number_of_games = None
+        self.mean_rounds_per_game = None
+        self.max_rounds = None
+        self.min_rounds = None
+        self.rounds_histogram = None
+        self.proportion_of_wins_player_1 = None
+        self.proportion_of_wins_player_2 = None
+        self.max_points_difference = None
+        self.min_points_difference = None
+        self._compute_statistics(games_report)
+
+    def _compute_statistics(self, games_report):
+        self.number_of_games = len(games_report)
+        self.rounds_per_game = [len(game['score_evolution']) for game in games_report]
+        self.mean_rounds_per_game = round(float(np.mean(self.rounds_per_game)),2)
+        self.max_rounds = max(self.rounds_per_game)
+        self.min_rounds = min(self.rounds_per_game)
+        self.rounds_histogram = self._histogram_to_dict(np.histogram(self.rounds_per_game, bins=int(self.number_of_games * 0.1)))
+        self.proportion_of_wins_player_1 = round(len([game for game in games_report if game["winner"] == self.name_player_1]) / self.number_of_games, 2)
+        self.proportion_of_wins_player_2 = 1 - self.proportion_of_wins_player_1
+        self.points_difference = [abs(game['score_evolution'][-1]['player_1_points'] - game['score_evolution'][-1]['player_2_points']) for game in games_report]
+        self.max_points_difference = max(self.points_difference)
+        self.min_points_difference = min(self.points_difference)
+        self.games_report = games_report
+
+    def get_statistics(self):
+        return {key: value for key,value in self.__dict__.items() if not key.startswith("_")}
+
+    def _histogram_to_dict(self, histogram):
+        bins = []
+        for i in range(len(list(histogram)[0])):
+            bins.append({f'{round(histogram[1][i],2)}-{round(histogram[1][i+1],2)}': int(histogram[0][i])})
+        return bins
+
+

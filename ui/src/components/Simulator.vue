@@ -16,17 +16,20 @@
                 </b-form-group>
                 <b-button @click="getGames">SIMULAR JUEGOS</b-button>
             </b-card>
-            <game v-for="(game, index) in games" :game="game" :key="index"></game>
+            <template v-if="displayStatistics">
+                <statistics :statistics="statistics"></statistics>
+            </template>
         </b-col>
     </b-container>
 </template>
 <script>
 import axios from 'axios';
-import Game from './Game.vue'
+import Statistics from './Statistics/Statistics.vue'
 export default {
     data(){
         return {
-            games: [],
+            displayStatistics: false,
+            statistics: {},
             gameConfig: {
                 players: {
                     playerOne: "",
@@ -37,10 +40,11 @@ export default {
         }
     },
     components:{
-        Game
+        Statistics
     },
     methods:{
         getGames(){
+            this.displayStatistics = false;
             axios.get('http://localhost:5000/games-simulation',{
                 params: {
                     "number-of-games": this.gameConfig.gamesNumber,
@@ -48,8 +52,8 @@ export default {
                     "player-2": this.gameConfig.players.playerTwo
                 }
             }).then((response) => {
-                console.log(response.data)
-                this.games = response.data.games
+                this.statistics = response.data.games;
+                this.displayStatistics = true;
             });
         }
     }
