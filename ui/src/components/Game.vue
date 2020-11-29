@@ -1,10 +1,10 @@
 <template>
     <b-container class="game-container">
         <b-card class="game-card text-center shadow-lg">
-            <b-row class="game-title text-center">
+            <div class="game-title">
                 <b-card-title>Juego {{key}}</b-card-title>
-            </b-row>
-            <b-row class="game-information text-center">
+            </div>
+            <div class="game-information">
                 <b-list-group flush>
                     <b-list-group-item>
                         <span>Jugador 1: </span>
@@ -15,17 +15,16 @@
                         <span class="data">{{game.player_2}}</span>
                     </b-list-group-item>
                 </b-list-group>
-            </b-row>
-            <b-row class="game-information text-center">
-                <span>Resultados </span>
-                <b-table class="game-table" :items="game.score_evolution" :fields="scoreEvolutionTable.fields" bordered></b-table>
+            </div>
+            <div class="game-information">
+                <b-table class="game-table" :items="game.score_evolution" :fields="scoreEvolutionTable.fields" thead-class="bg-dark text-white"></b-table>
                 <b-list-group flush>
                     <b-list-group-item>
                         <span>Ganador: </span>
                         <span class="data winner">{{game.winner}}</span>
                     </b-list-group-item>
                 </b-list-group>
-            <b-row>
+            </div>
         </b-card>
     </b-container>
 </template>
@@ -54,8 +53,6 @@ export default {
         margin-top: 4%;
     }
     .game-card{
-        text-align: center;
-        display: flex;
         font-size: large;
     }
     .game-information{
