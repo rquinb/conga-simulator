@@ -1,8 +1,10 @@
 import flask
+from flask_cors import CORS
 from entities.game_entities import Deck
 from entities.game_simulator import GamesSimulator
 
 app = flask.Flask(__name__)
+CORS(app)
 
 @app.route('/deck', methods=['GET'])
 def get_deck():
