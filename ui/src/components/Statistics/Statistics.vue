@@ -29,7 +29,7 @@
                     <rounds :statistics="statistics"></rounds>
                 </div>
             </div>
-            <b-button :class="displayGames ? 'btn-danger': 'btn-success'" @click="toggleDisplayGames"> {{showGamesButtonText}}</b-button>
+            <b-button :class="displayGames ? 'btn-danger': 'btn-success'" @click="toggleDisplayGames"> {{gamesButtonText}}</b-button>
             <template v-if="displayGames">
                 <game v-for="(game, index) in statistics.games_report" :game="game" :key="index"></game>
             </template>
@@ -61,7 +61,7 @@ export default {
     }
   },
   computed:{
-    showGamesButtonText(){
+    gamesButtonText(){
         return this.displayGames ? "Ocultar detalle de Juegos": "Mostrar detalle de Juegos"
     }
   }

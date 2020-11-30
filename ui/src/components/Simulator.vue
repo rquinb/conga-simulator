@@ -14,7 +14,14 @@
                     <b-form-input id="games-number" v-model="gameConfig.gamesNumber" type="range" min="0" max="1000"></b-form-input>
                     <span>Juegos: <span style="font-weight:bold">{{gameConfig.gamesNumber}}</span></span>
                 </b-form-group>
-                <b-button @click="getGames">SIMULAR JUEGOS</b-button>
+                <div class="simulate-button-container">
+                    <b-button @click="getGames"><b-spinner small type="grow" v-if="displayLoadingSpinner"></b-spinner>{{simulateButtonText}}</b-button>
+                </div>
+                <template v-if="displayLoadingSpinner">
+                    <div class="loading-element">
+                        <ping-pong class="spinner" size="150px"></ping-pong>
+                    </div>
+                </template>
             </b-card>
             <template v-if="displayStatistics">
                 <statistics :statistics="statistics"></statistics>
@@ -24,11 +31,13 @@
 </template>
 <script>
 import axios from 'axios';
+import PingPong from 'vue-loading-spinner/src/components/PingPong.vue'
 import Statistics from './Statistics/Statistics.vue'
 export default {
     data(){
         return {
             displayStatistics: false,
+            displayLoadingSpinner : false,
             statistics: {},
             gameConfig: {
                 players: {
@@ -40,11 +49,13 @@ export default {
         }
     },
     components:{
-        Statistics
+        Statistics,
+        PingPong
     },
     methods:{
         getGames(){
             this.displayStatistics = false;
+            this.displayLoadingSpinner = true;
             axios.get('http://localhost:5000/games-simulation',{
                 params: {
                     "number-of-games": this.gameConfig.gamesNumber,
@@ -53,14 +64,31 @@ export default {
                 }
             }).then((response) => {
                 this.statistics = response.data.games;
+                this.displayLoadingSpinner = false;
                 this.displayStatistics = true;
+            }).catch(() => {
+                this.displayLoadingSpinner = false;
             });
         }
+    },
+computed:{
+    simulateButtonText(){
+        return this.displayLoadingSpinner ? "Simulando juegos...": "SIMULAR JUEGOS";
     }
+  }
 }
 </script>
 <style scoped>
     .menu{
         background-color: rgb(133, 132, 132);
+    }
+    .loading-element{
+        width: 100%;
+    }
+    .simulate-button-container{
+        width: 100%;
+    }
+    .spinner{
+        margin-left: 40%;
     }
 </style>>
