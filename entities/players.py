@@ -1,3 +1,4 @@
+import numpy as np
 from entities.game_entities import Player
 from entities.card_processors import CardsGrouper
 
@@ -28,7 +29,10 @@ class ConservativeRandomRest(Player):
                 max_card = card_in_group
             elif card_in_group.number > max_card.number:
                 max_card = card_in_group
-        card_group.rest.drop_cards(max_card)
+        if max_card is None:
+            longest_game_index = np.argmax([len(game) for game in card_group.games])
+            max_card = card_group.games[longest_game_index][-1]
+        card_group.drop_card_from_group(max_card)
         rest_value = card_group.value()
         return ValueImpactAnalysis(rest_value=rest_value,
                                    less_valuable_card=max_card,

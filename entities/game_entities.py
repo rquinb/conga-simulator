@@ -119,6 +119,14 @@ class CardGroup:
             value += card.number if card.number is not None else self.COMMODIN_VALUE
         return value
 
+    def drop_card_from_group(self, card):
+        if card in self.rest:
+            return self.rest.drop_cards(card)
+        for game in self.games:
+            if card in game:
+                return game.drop_cards(card)
+        return None
+
 
 class Deck:
     def __init__(self):

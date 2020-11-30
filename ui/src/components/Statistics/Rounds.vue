@@ -15,6 +15,7 @@ data(){
             datasets: [
             {
                 backgroundColor: this.barsColor(),
+                label: false,
                 data: this.statistics.rounds_per_game,
                 yAxisID: 'y-axis'
             }
