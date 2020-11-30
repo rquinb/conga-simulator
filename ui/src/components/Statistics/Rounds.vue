@@ -15,7 +15,7 @@ data(){
             datasets: [
             {
                 backgroundColor: this.barsColor(),
-                label: false,
+                label: "Longitud de cada Round",
                 data: this.statistics.rounds_per_game,
                 yAxisID: 'y-axis'
             }

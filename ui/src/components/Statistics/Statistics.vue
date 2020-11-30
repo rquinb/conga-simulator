@@ -25,6 +25,12 @@
             </div>
             <div class="game-information">
                 <div class="section-title">
+                    <b-card-title>Proporcion de juegos ganados</b-card-title>
+                    <winners-proportion :statistics="statistics"></winners-proportion>
+                </div>
+            </div>
+            <div class="game-information">
+                <div class="section-title">
                     <b-card-title>Rounds</b-card-title>
                     <rounds :statistics="statistics"></rounds>
                 </div>
@@ -40,6 +46,7 @@
 
 import Rounds from './Rounds.vue'
 import Game from './Game.vue'
+import WinnersProportion from './WinnersProportion.vue'
 
 export default {
   name: 'statistics',
@@ -48,7 +55,8 @@ export default {
   },
   components: {
       Rounds,
-      Game
+      Game,
+      WinnersProportion
   },
   data(){
       return {
@@ -85,6 +93,7 @@ export default {
     }
     .section-title{
         text-decoration: underline;
+        margin-top: 5%;
     }
     .data{
         font-weight: bold;
