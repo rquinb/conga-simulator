@@ -21,14 +21,13 @@ class GamesSimulator:
                 for _ in range(7):
                     game.players[i].cards.receive_card(deck.retrieve_card())
                 game.players[i].rest_value = game.players[i].value_of_current_hand()
-            game, deck = self._simulate_round(game, deck)
+            game, deck, cut_info = self._simulate_round(game, deck)
             for index, player in enumerate(game.players):
-                # If some player reaches 100, they lose the game
-                if player.has_cut():
-                    if player.cut.kind == "conga_cut":
-                        winner_index = index
-                        game.winner = winner_index
-                        break
+                # If some player reaches 100, they lose the game. The game also ends when I player has Conga
+                if cut_info['cut_kind'] == "conga_cut":
+                    winner_index = cut_info['player']
+                    game.winner = winner_index
+                    break
                 if player.score >= 100:
                     winner_index = 0 if index == 1 else 1
                     game.winner = winner_index
@@ -60,9 +59,10 @@ class GamesSimulator:
                         }
                     }
                 )
+                cut_info = {"player": current_player, "cut_kind": game.players[current_player].cut.kind}
                 game.players[current_player].cut = None
                 break
-        return game, deck
+        return game, deck, cut_info
 
     def compute_statistics(self,name_player_1, name_player_2, games):
         games_report = [game.report_results() for game in games]

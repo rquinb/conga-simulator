@@ -62,7 +62,11 @@
             </div>
             <b-button :class="displayGames ? 'btn-danger': 'btn-success'" @click="toggleDisplayGames"> {{gamesButtonText}}</b-button>
             <template v-if="displayGames">
-                <game v-for="(game, index) in statistics.games_report" :game="game" :key="index"></game>
+                <game v-for="(game, index) in statistics.games_report" 
+                :game="game" :key="index" 
+                :namePlayer1="statistics.name_player_1"
+                :namePlayer2="statistics.name_player_2" >
+                </game>
             </template>
         </b-card>
     </b-container>

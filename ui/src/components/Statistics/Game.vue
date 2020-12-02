@@ -34,14 +34,17 @@ export default {
   name: 'game',
   props: {
       game: Object, 
-      key: Number
+      key: Number,
+      namePlayer1: String,
+      namePlayer2: String
   },
   data(){
       return {
           scoreEvolutionTable: {
               fields: [
-                  {key:'player_1', label:'Puntos Jugador 1'}, 
-                  {key:'player_2', label:'Puntos Jugador 2'}]
+                  {key:'player_1', label:`Puntos ${this.namePlayer1}`}, 
+                  {key:'player_2', label:`Puntos ${this.namePlayer2}`}
+                ]
           }
       }
   }
