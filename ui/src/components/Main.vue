@@ -9,6 +9,7 @@ import MainMessage from './MainMessage.vue'
 
 export default {
   name: 'Main',
+  title: 'Conga Simulator',
   components: {
     MainMessage
   },

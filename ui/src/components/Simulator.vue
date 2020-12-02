@@ -34,6 +34,7 @@ import axios from 'axios';
 import PingPong from 'vue-loading-spinner/src/components/PingPong.vue'
 import Statistics from './Statistics/Statistics.vue'
 export default {
+    title: 'Conga Simulator',
     data(){
         return {
             displayStatistics: false,

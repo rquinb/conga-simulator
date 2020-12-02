@@ -1,6 +1,7 @@
 import Vue from 'vue';
 import App from './App.vue'
 import VueRouter from "vue-router";
+import titleMixin from './mixins/titleMixin.js'
 import Main from './components/Main.vue';
 import Simulator from './components/Simulator.vue';
 import { BootstrapVue, IconsPlugin } from 'bootstrap-vue'
@@ -11,6 +12,7 @@ Vue.config.productionTip = false
 Vue.use(BootstrapVue);
 Vue.use(IconsPlugin);
 Vue.use(VueRouter);
+Vue.mixin(titleMixin)
 const router = new VueRouter({
   mode: "hash",
   routes: [
