@@ -1,32 +1,35 @@
 <template>
-    <b-container>
-        <b-col class="menu" md="2"></b-col>
-        <b-col class="main" md="10">
-            <b-card class="text-center">
-                <b-card-title>CONGA SIMULATOR</b-card-title>
-                <b-form-group id="player-1" label="Jugador 1" label-for="player-1">
-                    <b-form-input class="text-center" id="player-1" v-model="gameConfig.players.playerOne" trim></b-form-input>
-                </b-form-group>
-                <b-form-group id="player-2" label="Jugador 2" label-for="player-2">
-                    <b-form-input class="text-center" id="player-2" v-model="gameConfig.players.playerTwo" trim></b-form-input>
-                </b-form-group>
-                <b-form-group id="games-number" label="Numero de juegos a simular" label-for="games-number">
-                    <b-form-input id="games-number" v-model="gameConfig.gamesNumber" type="range" min="0" max="1000"></b-form-input>
-                    <span>Juegos: <span style="font-weight:bold">{{gameConfig.gamesNumber}}</span></span>
-                </b-form-group>
-                <div class="simulate-button-container">
-                    <b-button @click="getGames"><b-spinner small type="grow" v-if="displayLoadingSpinner"></b-spinner>{{simulateButtonText}}</b-button>
-                </div>
-                <template v-if="displayLoadingSpinner">
-                    <div class="loading-element">
-                        <ping-pong class="spinner" size="150px"></ping-pong>
+    <b-container fluid>
+        <b-row class="main text-center justify-content-md-center">
+            <b-col>
+                <b-card class="text-center">
+                    <b-card-title>CONGA SIMULATOR</b-card-title>
+                    <b-form-group id="player-1" label="Jugador 1" label-for="player-1">
+                        <b-form-input class="text-center" id="player-1" v-model="gameConfig.players.playerOne" trim></b-form-input>
+                    </b-form-group>
+                    <b-form-group id="player-2" label="Jugador 2" label-for="player-2">
+                        <b-form-input class="text-center" id="player-2" v-model="gameConfig.players.playerTwo" trim></b-form-input>
+                    </b-form-group>
+                    <b-form-group id="games-number" label="Numero de juegos a simular" label-for="games-number">
+                        <b-form-input id="games-number" v-model="gameConfig.gamesNumber" type="range" min="0" max="1000"></b-form-input>
+                        <span>Juegos: <span style="font-weight:bold">{{gameConfig.gamesNumber}}</span></span>
+                    </b-form-group>
+                    <div class="simulate-button-container">
+                        <b-button @click="getGames"><b-spinner small type="grow" v-if="displayLoadingSpinner"></b-spinner>{{simulateButtonText}}</b-button>
                     </div>
-                </template>
-            </b-card>
+                    <template v-if="displayLoadingSpinner">
+                        <div class="loading-element">
+                            <ping-pong class="spinner" size="150px"></ping-pong>
+                        </div>
+                    </template>
+                </b-card>
+            <b-col>
+        </b-row>
+        <b-row>
             <template v-if="displayStatistics">
                 <statistics :statistics="statistics"></statistics>
             </template>
-        </b-col>
+        </b-row>
     </b-container>
 </template>
 <script>

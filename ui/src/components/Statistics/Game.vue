@@ -5,16 +5,16 @@
                 <b-table class="game-table" :items="game.score_evolution" :fields="scoreEvolutionTable.fields" thead-class="bg-dark text-white">
                     <template #cell()="data">
                         <template v-if="data.value.cut == null">
-                            {{ data.value.points}}
+                            <span>{{ data.value.points}}</span>
                         </template>
                         <template v-else-if="data.value.cut == 'zero_cut'">
-                            {{data.value.points}} ✂✫
+                            <span v-b-tooltip.hover title="Corte en Cero">{{data.value.points}} ✂✫</span>
                         </template>
                         <template v-else-if="data.value.cut == 'normal_cut'">
-                            {{data.value.points}} ✂
+                            <span v-b-tooltip.hover title="Corte Normal">{{data.value.points}} ✂</span>
                         </template>
                         <template v-else >
-                            {{data.value.points}} ♛
+                            <span v-b-tooltip.hover title="Conga">{{data.value.points}} ♛</span>
                         </template>
                     </template>
                 </b-table>
