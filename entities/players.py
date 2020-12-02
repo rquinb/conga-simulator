@@ -3,13 +3,14 @@ from entities.game_entities import Player
 from entities.card_processors import CardsGrouper
 
 class ValueImpactAnalysis:
-    def __init__(self, rest_value, less_valuable_card, has_value_improved):
+    def __init__(self, rest_value, less_valuable_card, has_value_improved, potential_cut_type):
         self.rest_value = rest_value
         self.less_valuable_card = less_valuable_card
         self.has_value_improved = has_value_improved
+        self.potential_cut_type = potential_cut_type
 
 
-class ConservativeRandomRest(Player):
+class ConservativeMinRest(Player):
     def __init__(self, name, is_hand=False):
         super().__init__(name, is_hand)
         self.rest_value = None
@@ -34,16 +35,18 @@ class ConservativeRandomRest(Player):
             max_card = card_group.games[longest_game_index][-1]
         card_group.drop_card_from_group(max_card)
         rest_value = card_group.value()
+        potential_cut_type = card_group.find_type_of_cut()
         return ValueImpactAnalysis(rest_value=rest_value,
                                    less_valuable_card=max_card,
+                                   potential_cut_type=potential_cut_type,
                                    has_value_improved=rest_value < self.rest_value )
 
     def _play(self, card):
         value_analysis = self._analyze_card_impact_on_value(card)
         self.rest_value = value_analysis.rest_value
         self.cards.receive_card(card)
-        if self.rest_value < 10:
-            self.cut()
+        if self.rest_value < 10 and self.score + self.rest_value < 100:
+            self.play_cut(value_analysis.potential_cut_type)
         return self.cards.drop_cards(value_analysis.less_valuable_card)
 
     def make_move(self, deck):

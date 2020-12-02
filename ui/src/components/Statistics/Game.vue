@@ -2,7 +2,22 @@
     <b-container class="game-container">
         <b-card class="game-card text-center shadow-lg">
             <div class="game-information">
-                <b-table class="game-table" :items="game.score_evolution" :fields="scoreEvolutionTable.fields" thead-class="bg-dark text-white"></b-table>
+                <b-table class="game-table" :items="game.score_evolution" :fields="scoreEvolutionTable.fields" thead-class="bg-dark text-white">
+                    <template #cell()="data">
+                        <template v-if="data.value.cut == null">
+                            {{ data.value.points}}
+                        </template>
+                        <template v-else-if="data.value.cut == 'zero_cut'">
+                            {{data.value.points}} ✂✫
+                        </template>
+                        <template v-else-if="data.value.cut == 'normal_cut'">
+                            {{data.value.points}} ✂
+                        </template>
+                        <template v-else >
+                            {{data.value.points}} ♛
+                        </template>
+                    </template>
+                </b-table>
                 <b-list-group flush>
                     <b-list-group-item>
                         <span>Ganador: </span>
@@ -25,8 +40,8 @@ export default {
       return {
           scoreEvolutionTable: {
               fields: [
-                  {key:'player_1_points', label:'Puntos Jugador 1'}, 
-                  {key:'player_2_points', label:'Puntos Jugador 2'}]
+                  {key:'player_1', label:'Puntos Jugador 1'}, 
+                  {key:'player_2', label:'Puntos Jugador 2'}]
           }
       }
   }

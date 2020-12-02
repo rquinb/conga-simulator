@@ -1,6 +1,6 @@
 import numpy as np
 from entities.game_entities import Cards, Deck, Game
-from entities.players import ConservativeRandomRest
+from entities.players import ConservativeMinRest
 
 class GamesSimulator:
 
@@ -12,7 +12,7 @@ class GamesSimulator:
 
     def _simulate_game(self, name_player_1, name_player_2):
         # Starts a new game
-        game = Game(players=[ConservativeRandomRest(name_player_1), ConservativeRandomRest(name_player_2)])
+        game = Game(players=[ConservativeMinRest(name_player_1), ConservativeMinRest(name_player_2)])
         while True:
             # Give cards
             deck = Deck()
@@ -24,6 +24,11 @@ class GamesSimulator:
             game, deck = self._simulate_round(game, deck)
             for index, player in enumerate(game.players):
                 # If some player reaches 100, they lose the game
+                if player.has_cut():
+                    if player.cut.kind == "conga_cut":
+                        winner_index = index
+                        game.winner = winner_index
+                        break
                 if player.score >= 100:
                     winner_index = 0 if index == 1 else 1
                     game.winner = winner_index
@@ -39,14 +44,23 @@ class GamesSimulator:
             current_player = 0 if current_player == 1 else 1
             game.players[current_player].played_dropped_card = False
             deck = game.players[current_player].make_move(deck)
-            if game.players[current_player].has_cut:
+            if game.players[current_player].has_cut():
                 # When a player "cuts" a step-game has finished, scores are registered and then a check is
                 # needed to figure out if some player reached the max amount of points (that means they lost)
                 game.players[0].score += game.players[0].rest_value
                 game.players[1].score += game.players[1].rest_value
                 game.results.append(
-                    {"player_1_points": game.players[0].score, "player_2_points": game.players[1].score})
-                game.players[current_player].has_cut = False
+                    {"player_1":{
+                        "points":game.players[0].score,
+                        "cut": game.players[0].cut.kind if game.players[0].cut else None
+                        },
+                    "player_2":{
+                        "points": game.players[1].score,
+                        "cut": game.players[1].cut.kind if game.players[1].cut else None
+                        }
+                    }
+                )
+                game.players[current_player].cut = None
                 break
         return game, deck
 
@@ -67,6 +81,8 @@ class GameStatistics:
         self.proportion_of_wins_player_2 = None
         self.max_points_difference = None
         self.min_points_difference = None
+        self.player_1_cuts = None
+        self.player_2_cuts = None
         self._compute_statistics(games_report)
 
     def _compute_statistics(self, games_report):
@@ -75,12 +91,14 @@ class GameStatistics:
         self.mean_rounds_per_game = round(float(np.mean(self.rounds_per_game)),2)
         self.max_rounds = max(self.rounds_per_game)
         self.min_rounds = min(self.rounds_per_game)
-        self.rounds_histogram = self._histogram_to_dict(np.histogram(self.rounds_per_game, bins=int(self.number_of_games * 0.1)))
+        self.rounds_histogram = self._histogram_to_dict(np.histogram(self.rounds_per_game, bins="sqrt"))
         self.proportion_of_wins_player_1 = round(len([game for game in games_report if game["winner"] == self.name_player_1]) / self.number_of_games, 2)
-        self.proportion_of_wins_player_2 = 1 - self.proportion_of_wins_player_1
-        self.points_difference = [abs(game['score_evolution'][-1]['player_1_points'] - game['score_evolution'][-1]['player_2_points']) for game in games_report]
+        self.proportion_of_wins_player_2 = round(1 - self.proportion_of_wins_player_1, 2)
+        self.points_difference = [abs(game['score_evolution'][-1]['player_1']['points'] - game['score_evolution'][-1]['player_2']['points']) for game in games_report]
         self.max_points_difference = max(self.points_difference)
         self.min_points_difference = min(self.points_difference)
+        self.player_1_cuts = self._cuts_report(games_report, "player_1")
+        self.player_2_cuts = self._cuts_report(games_report, "player_2")
         self.games_report = games_report
 
     def get_statistics(self):
@@ -91,5 +109,15 @@ class GameStatistics:
         for i in range(len(list(histogram)[0])):
             bins.append({f'{round(histogram[1][i],2)}-{round(histogram[1][i+1],2)}': int(histogram[0][i])})
         return bins
+
+    def _cuts_report(self, games_report, player_number):
+        cuts = {"no_cut": 0,"normal_cut": 0, "zero_cut": 0, "conga_cut": 0}
+        for game in games_report:
+            for round in game['score_evolution']:
+                if not round[player_number]['cut']:
+                    cuts['no_cut'] += 1
+                else:
+                    cuts[round[player_number]['cut']] += 1
+        return cuts
 
 

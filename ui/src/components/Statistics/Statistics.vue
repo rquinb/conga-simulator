@@ -31,9 +31,34 @@
             </div>
             <div class="game-information">
                 <div class="section-title">
-                    <b-card-title>Rounds</b-card-title>
+                    <b-card-title>Distribucion de longitud de Rounds</b-card-title>
+                    <rounds-histogram :statistics="statistics"></rounds-histogram>
+                </div>
+            </div>
+            <div class="game-information">
+                <div class="section-title">
+                    <b-card-title>Detalle de longitud de Rounds</b-card-title>
                     <rounds :statistics="statistics"></rounds>
                 </div>
+            </div>
+            <div class="game-information">
+                <div class="section-title">
+                    <b-card-title>Detalle de tipos de corte por jugador</b-card-title>
+                </div>
+                <b-card statistics-card text-center>
+                    <b-container fluid>
+                        <b-row>
+                            <b-col md="6">
+                                <b-card-title>{{statistics.name_player_1}}<b-card-title>
+                                <cuts-report :playerCuts="statistics.player_1_cuts"></cuts-report>
+                            </b-col>
+                            <b-col md="6">
+                                <b-card-title>{{statistics.name_player_2}}<b-card-title>
+                                <cuts-report :playerCuts="statistics.player_2_cuts"></cuts-report>
+                            </b-col>
+                        </b-row>
+                    </b-container>
+                </b-card>
             </div>
             <b-button :class="displayGames ? 'btn-danger': 'btn-success'" @click="toggleDisplayGames"> {{gamesButtonText}}</b-button>
             <template v-if="displayGames">
@@ -47,6 +72,8 @@
 import Rounds from './Rounds.vue'
 import Game from './Game.vue'
 import WinnersProportion from './WinnersProportion.vue'
+import RoundsHistogram from './RoundsHistogram.vue'
+import CutsReport from './CutsReport.vue'
 
 export default {
   name: 'statistics',
@@ -56,7 +83,9 @@ export default {
   components: {
       Rounds,
       Game,
-      WinnersProportion
+      WinnersProportion,
+      RoundsHistogram,
+      CutsReport
   },
   data(){
       return {

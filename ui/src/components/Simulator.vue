@@ -1,14 +1,14 @@
 <template>
     <b-container>
-        <b-col class="menu" cols="2"></b-col>
-        <b-col class="main" cols="10">
+        <b-col class="menu" md="2"></b-col>
+        <b-col class="main" md="10">
             <b-card class="text-center">
                 <b-card-title>CONGA SIMULATOR</b-card-title>
                 <b-form-group id="player-1" label="Jugador 1" label-for="player-1">
-                    <b-form-input id="player-1" v-model="gameConfig.players.playerOne" trim></b-form-input>
+                    <b-form-input class="text-center" id="player-1" v-model="gameConfig.players.playerOne" trim></b-form-input>
                 </b-form-group>
                 <b-form-group id="player-2" label="Jugador 2" label-for="player-2">
-                    <b-form-input id="player-2" v-model="gameConfig.players.playerTwo" trim></b-form-input>
+                    <b-form-input class="text-center" id="player-2" v-model="gameConfig.players.playerTwo" trim></b-form-input>
                 </b-form-group>
                 <b-form-group id="games-number" label="Numero de juegos a simular" label-for="games-number">
                     <b-form-input id="games-number" v-model="gameConfig.gamesNumber" type="range" min="0" max="1000"></b-form-input>

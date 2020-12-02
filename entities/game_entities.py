@@ -127,6 +127,20 @@ class CardGroup:
                 return game.drop_cards(card)
         return None
 
+    def _has_cut_in_zero(self):
+        return not self.rest
+
+    def _has_conga(self):
+        return len(self.games) == 1 and not self.rest
+
+    def find_type_of_cut(self):
+        if self._has_conga():
+            return "conga_cut"
+        elif self._has_cut_in_zero():
+            return "zero_cut"
+        else:
+            return "normal_cut"
+
 
 class Deck:
     def __init__(self):
@@ -160,7 +174,7 @@ class Player:
         self.is_hand = is_hand
         self.score = 0
         self.winner = False
-        self.has_cut = False
+        self.cut = None
         self.move = 0
         self.played_dropped_card = False
 
@@ -170,8 +184,11 @@ class Player:
     def remove_points(self, points):
         self.score -= points
 
-    def cut(self):
-        self.has_cut = True
+    def play_cut(self, cut_type):
+        self.cut = Cut(value=True, kind=cut_type)
+
+    def has_cut(self):
+        return self.cut.value if self.cut else False
 
 
 class Game:
@@ -185,3 +202,12 @@ class Game:
         return {"score_evolution": self.results,
                 "winner":self.players[self.winner].name}
 
+
+
+class Cut:
+    def __init__(self, value, kind):
+        self.value = value
+        self.kind = kind
+
+    def to_dict(self):
+        return self.__dict__
