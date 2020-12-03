@@ -24,9 +24,7 @@ You need to have docker installed, as main app environment is based on docker co
 1. Go visit through the Web UI and start simulating games!
 
 
-## App screens
-
-### Simulation form
+## Simulation form
 
 ![alt text](./docs/img/simulate-games-form.PNG "Simulation Form Screen")
 
@@ -40,7 +38,7 @@ The app currently lets you simulate Conga games played by bots. You can setup yo
  - **Game**: Set of *rounds* until some player reaches 100 points or someone plays a *Conga move*
 
 
- ### Games statistics and details
+ ## Games statistics and details
 
 ![alt text](./docs/img/statistics-top-games-detail.PNG "Simulation Statistics and Games")
 ![alt text](./docs/img/statistics-middle.PNG "Simulation Statistics and Games")
