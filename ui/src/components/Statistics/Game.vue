@@ -1,30 +1,28 @@
 <template>
-    <b-container class="game-container">
-        <b-card class="game-card text-center shadow-lg">
-            <div class="game-information">
-                <b-table class="game-table" :items="game.score_evolution" :fields="scoreEvolutionTable.fields" thead-class="bg-dark text-white">
-                    <template #cell()="data">
-                        <template v-if="data.value.cut == null">
-                            <span>{{ data.value.points}}</span>
-                        </template>
-                        <template v-else-if="data.value.cut == 'zero_cut'">
-                            <span v-b-tooltip.hover title="Corte en Cero">{{data.value.points}} ✂✫</span>
-                        </template>
-                        <template v-else-if="data.value.cut == 'normal_cut'">
-                            <span v-b-tooltip.hover title="Corte Normal">{{data.value.points}} ✂</span>
-                        </template>
-                        <template v-else >
-                            <span v-b-tooltip.hover title="Conga">{{data.value.points}} ♛</span>
-                        </template>
+    <b-container>
+        <b-card class="gradient-background game-card text-center shadow-lg">
+            <b-table class="gradient-background game-table" :items="game.score_evolution" :fields="scoreEvolutionTable.fields" thead-class="bg-dark text-white">
+                <template #cell()="data">
+                    <template v-if="data.value.cut == null">
+                        <span>{{ data.value.points}}</span>
                     </template>
-                </b-table>
-                <b-list-group flush>
-                    <b-list-group-item>
-                        <span>Ganador: </span>
-                        <span class="data winner">{{game.winner}}</span>
-                    </b-list-group-item>
-                </b-list-group>
-            </div>
+                    <template v-else-if="data.value.cut == 'zero_cut'">
+                        <span v-b-tooltip.hover title="Corte en Cero">{{data.value.points}} ✂✫</span>
+                    </template>
+                    <template v-else-if="data.value.cut == 'normal_cut'">
+                        <span v-b-tooltip.hover title="Corte Normal">{{data.value.points}} ✂</span>
+                    </template>
+                    <template v-else >
+                        <span v-b-tooltip.hover title="Conga">{{data.value.points}} ♛</span>
+                    </template>
+                </template>
+            </b-table>
+            <b-list-group flush>
+                <b-list-group-item class="gradient-background">
+                    <span>Ganador: </span>
+                    <span class="data winner">{{game.winner}}</span>
+                </b-list-group-item>
+            </b-list-group>
         </b-card>
     </b-container>
 </template>
@@ -52,9 +50,6 @@ export default {
 </script>
 
 <style>
-    .game-container{
-        margin-top: 4%;
-    }
     .game-card{
         font-size: large;
     }
@@ -66,6 +61,9 @@ export default {
     }
     .winner{
         color: rgb(11, 146, 29);
+    }
+    .game-table{
+        font-size: x-large;
     }
 
 </style>

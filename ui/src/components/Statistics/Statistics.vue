@@ -7,7 +7,7 @@
         </b-row>
         <b-row class="row-height">
             <b-col class="scrollable-column mh-100" md="6">
-                <b-card class="statistics-card text-center shadow-lg">
+                <b-card class="gradient-background statistics-card text-center shadow-lg">
                     <div class="game-title">
                         <b-card-title>Estadisticas</b-card-title>
                     </div>
@@ -16,15 +16,15 @@
                             <b-card-title>General</b-card-title>
                         </div>
                         <b-list-group flush>
-                            <b-list-group-item>
+                            <b-list-group-item class="gradient-background">
                                 <span>Jugador 1: </span>
                                 <span class="data">{{statistics.name_player_1}}</span><span class="symbol-player-1">✪</span>
                             </b-list-group-item>
-                            <b-list-group-item>
+                            <b-list-group-item class="gradient-background">
                                 <span>Jugador 2: </span>
                                 <span class="data">{{statistics.name_player_2}}</span><span class="symbol-player-2">✪</span>
                             </b-list-group-item>
-                            <b-list-group-item>
+                            <b-list-group-item class="gradient-background">
                                 <span>Cantidad de juegos: </span>
                                 <span class="data">{{statistics.number_of_games}}</span>
                             </b-list-group-item>
@@ -52,7 +52,7 @@
                         <div class="section-title">
                             <b-card-title>Detalle de tipos de corte por jugador</b-card-title>
                         </div>
-                        <b-card statistics-card text-center>
+                        <b-card class="gradient-background statistics-card text-center">
                             <b-container fluid>
                                 <b-row>
                                     <b-col md="6">
@@ -103,7 +103,7 @@ export default {
   },
   data(){
       return {
-        displayGames : false
+        displayGames : true
       }
   },
   methods:{

@@ -1,14 +1,14 @@
 <template>
-    <b-container fluid>
+    <b-container class="simulator-container" fluid>
         <b-row class="main text-center justify-content-md-center">
             <b-col>
-                <b-card class="text-center">
+                <b-card class="text-center simulator-form-element gradient-background">
                     <b-card-title>CONGA SIMULATOR</b-card-title>
                     <b-form-group id="player-1" label="Jugador 1" label-for="player-1">
-                        <b-form-input class="text-center" id="player-1" v-model="gameConfig.players.playerOne" trim></b-form-input>
+                        <b-form-input class="gradient-background text-center simulator-form-element input-player input-player-1" id="player-1" v-model="gameConfig.players.playerOne" trim></b-form-input>
                     </b-form-group>
                     <b-form-group id="player-2" label="Jugador 2" label-for="player-2">
-                        <b-form-input class="text-center" id="player-2" v-model="gameConfig.players.playerTwo" trim></b-form-input>
+                        <b-form-input class="gradient-background text-center simulator-form-element input-player input-player-2" id="player-2" v-model="gameConfig.players.playerTwo" trim></b-form-input>
                     </b-form-group>
                     <b-form-group id="games-number" label="Numero de juegos a simular" label-for="games-number">
                         <b-form-input id="games-number" v-model="gameConfig.gamesNumber" type="range" min="0" max="1000"></b-form-input>
@@ -82,9 +82,9 @@ computed:{
   }
 }
 </script>
-<style scoped>
-    .menu{
-        background-color: rgb(133, 132, 132);
+<style>
+    .gradient-background {
+        background-image: linear-gradient(to bottom, rgba(250, 212, 212, 0.651), rgba(250, 212, 212, 0.986));
     }
     .loading-element{
         width: 100%;
@@ -93,6 +93,20 @@ computed:{
         width: 100%;
     }
     .spinner{
-        margin-left: 40%;
+        margin-left: 42%;
+    }
+    .simulator-form-element{
+        display: inline-block;
+        width: 50%;
+    }
+    .input-player{
+        font-weight: bold;
+        font-size: x-large;
+    }
+    .input-player-1{
+        color: blue;
+    }
+    .input-player-2{
+        color: red;
     }
 </style>>
