@@ -1,6 +1,29 @@
 import numpy as np
-from entities.game_entities import Player, Game
+from entities.game_entities import Cards, Game, Cut
 from entities.card_processors import CardsGrouper
+
+class PlayerBuilder:
+
+    def build_player(self, name, agent_type="conservative_chooser", accepted_cards_range=None, max_rest_for_cutting=None):
+        if agent_type == "conservative_chooser":
+            constructor_params = {}
+            constructor_params['name'] = name
+            if accepted_cards_range:
+                if len(accepted_cards_range) == 2:
+                    constructor_params["min_card_number_accepted"] = accepted_cards_range[0]
+                    constructor_params["max_card_number_accepted"] = accepted_cards_range[1]
+            if max_rest_for_cutting:
+                constructor_params["max_rest_for_cutting"] = max_rest_for_cutting
+            return self._build_conservative_chooser(**constructor_params)
+        else:
+            raise ValueError(f'Invalid agent type: "{agent_type}" is not an existent agent_type')
+
+    def _build_conservative_chooser(self, name, min_card_number_accepted, max_card_number_accepted, max_rest_for_cutting):
+        return ConservativeMinRest(name=name,
+                                   min_card_number_accepted= min_card_number_accepted,
+                                   max_card_number_accepted= max_card_number_accepted,
+                                   max_rest_for_cutting=max_rest_for_cutting)
+
 
 class ValueImpactAnalysis:
     def __init__(self, rest_value, less_valuable_card, has_value_improved, potential_cut_type):
@@ -10,11 +33,15 @@ class ValueImpactAnalysis:
         self.potential_cut_type = potential_cut_type
 
 
-class ConservativeMinRest(Player):
-    def __init__(self, name, is_hand=False, max_rest_for_cutting=10):
-        super().__init__(name, is_hand)
+class Player:
+    def __init__(self, name):
+        self.cards = Cards()
+        self.name = name
+        self.score = 0
+        self.winner = False
+        self.cut = None
+        self.played_dropped_card = False
         self.rest_value = None
-        self.max_rest_for_cutting = max_rest_for_cutting
 
     def value_of_current_hand(self):
         cards_grouper = CardsGrouper()
@@ -40,7 +67,27 @@ class ConservativeMinRest(Player):
         return ValueImpactAnalysis(rest_value=rest_value,
                                    less_valuable_card=max_card,
                                    potential_cut_type=potential_cut_type,
-                                   has_value_improved=rest_value < self.rest_value )
+                                   has_value_improved=rest_value < self.rest_value)
+
+    def add_points(self, points):
+        self.score += points
+
+    def remove_points(self, points):
+        self.score -= points
+
+    def play_cut(self, cut_type):
+        self.cut = Cut(value=True, kind=cut_type)
+
+    def has_cut(self):
+        return self.cut.value if self.cut else False
+
+
+class ConservativeMinRest(Player):
+    def __init__(self, name, max_rest_for_cutting=10, max_card_number_accepted=12, min_card_number_accepted=1):
+        super().__init__(name)
+        self.max_rest_for_cutting = max_rest_for_cutting
+        self.max_card_number_accepted = max_card_number_accepted
+        self.min_card_number_accepted = min_card_number_accepted
 
     def _play(self, card):
         value_analysis = self._analyze_card_impact_on_value(card)
@@ -53,16 +100,18 @@ class ConservativeMinRest(Player):
     def make_move(self, deck):
         if deck.dropped_cards:
             candidate_card = deck.dropped_cards.drop_cards()
+            is_between_acceptable_number_range = candidate_card.number >= self.min_card_number_accepted and candidate_card.number <= self.max_card_number_accepted
             analysis = self._analyze_card_impact_on_value(candidate_card)
-            if analysis.has_value_improved:
+            if analysis.has_value_improved and is_between_acceptable_number_range:
                 deck.play_card(self._play(candidate_card))
                 self.played_dropped_card = True
             else:
                 deck.play_card(candidate_card)
         if not self.played_dropped_card:
             candidate_card = deck.retrieve_card()
+            is_between_acceptable_number_range = candidate_card.number >= self.min_card_number_accepted and candidate_card.number <= self.max_card_number_accepted
             analysis = self._analyze_card_impact_on_value(candidate_card)
-            if analysis.has_value_improved:
+            if analysis.has_value_improved and is_between_acceptable_number_range:
                 deck.play_card(self._play(candidate_card))
             else:
                 deck.play_card(candidate_card)

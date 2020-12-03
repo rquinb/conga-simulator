@@ -168,30 +168,6 @@ class Deck:
         self.dropped_cards.receive_card(card)
 
 
-class Player:
-    def __init__(self, name, is_hand=False):
-        self.cards = Cards()
-        self.name = name
-        self.is_hand = is_hand
-        self.score = 0
-        self.winner = False
-        self.cut = None
-        self.move = 0
-        self.played_dropped_card = False
-
-    def add_points(self, points):
-        self.score += points
-
-    def remove_points(self, points):
-        self.score -= points
-
-    def play_cut(self, cut_type):
-        self.cut = Cut(value=True, kind=cut_type)
-
-    def has_cut(self):
-        return self.cut.value if self.cut else False
-
-
 class Game:
     MAX_SCORE = 100
     CARDS_IN_HAND = 7

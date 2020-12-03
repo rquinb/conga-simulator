@@ -1,18 +1,19 @@
+import copy
 import numpy as np
 from entities.game_entities import Cards, Deck, Game
-from entities.players import ConservativeMinRest
+
 
 class GamesSimulator:
 
-    def simulate_games(self, number_of_games, name_player_1, name_player_2):
+    def simulate_games(self, number_of_games, player_1, player_2):
         games = []
         for _ in range(number_of_games):
-            games.append(self._simulate_game(name_player_1, name_player_2))
+            games.append(self._simulate_game(player_1, player_2))
         return games
 
-    def _simulate_game(self, name_player_1, name_player_2):
+    def _simulate_game(self, player_1, player_2):
         # Starts a new game
-        game = Game(players=[ConservativeMinRest(name_player_1), ConservativeMinRest(name_player_2)])
+        game = Game(players=[copy.deepcopy(player_1), copy.deepcopy(player_2)])
         while True:
             # Give cards
             deck = Deck()
