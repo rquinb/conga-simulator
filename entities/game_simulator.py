@@ -18,7 +18,7 @@ class GamesSimulator:
             deck = Deck()
             for i in range(len(game.players)):
                 game.players[i].cards = Cards()
-                for _ in range(7):
+                for _ in range(game.CARDS_IN_HAND):
                     game.players[i].cards.receive_card(deck.retrieve_card())
                 game.players[i].rest_value = game.players[i].value_of_current_hand()
             game, deck, cut_info = self._simulate_round(game, deck)
@@ -28,7 +28,7 @@ class GamesSimulator:
                     winner_index = cut_info['player']
                     game.winner = winner_index
                     break
-                if player.score >= 100:
+                if player.score >= game.MAX_SCORE:
                     winner_index = 0 if index == 1 else 1
                     game.winner = winner_index
                     break
@@ -111,7 +111,7 @@ class GameStatistics:
         return bins
 
     def _cuts_report(self, games_report, player_number):
-        cuts = {"no_cut": 0,"normal_cut": 0, "zero_cut": 0, "conga_cut": 0}
+        cuts = {key: 0 for key in Game.CUT_TYPES}
         for game in games_report:
             for round in game['score_evolution']:
                 if not round[player_number]['cut']:

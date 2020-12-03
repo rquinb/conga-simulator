@@ -2,9 +2,6 @@ import random
 import game_exceptions
 from collections import Sequence
 
-KINDS = {"E":"espada", "O": "oro", "B": "basto", "C": "copa"}
-MAX_NUMBER = 12
-MAX_COMMODINES = 2
 
 class Card:
     def __init__(self, number=None, kind=None, commodin=False):
@@ -13,19 +10,19 @@ class Card:
         self.commodin= commodin
 
     def _set_number(self, number):
-        if number <= MAX_NUMBER:
+        if number <= Cards.MAX_NUMBER:
             return number
         else:
-            raise game_exceptions.InvalidCardNumber(f"Please provide a number less than or equal to {MAX_NUMBER}")
+            raise game_exceptions.InvalidCardNumber(f"Please provide a number less than or equal to {Cards.MAX_NUMBER}")
 
     def _set_kind(self, kind):
-        if kind in KINDS.keys():
+        if kind in Cards.KINDS.keys():
             return kind
         else:
-            raise game_exceptions.InvalidCardKind(f"Please provide a valid kind: It should be one of {KINDS}")
+            raise game_exceptions.InvalidCardKind(f"Please provide a valid kind: It should be one of {Cards.KINDS}")
 
     def to_string(self):
-        return f"{self.number} de {KINDS.get(self.kind)}" if not self.commodin else "Comodin"
+        return f"{self.number} de {Cards.KINDS.get(self.kind)}" if not self.commodin else "Comodin"
 
     def to_dict(self):
         return self.__dict__
@@ -38,6 +35,10 @@ class Card:
 
 
 class Cards(Sequence):
+    KINDS = {"E": "espada", "O": "oro", "B": "basto", "C": "copa"}
+    MAX_NUMBER = 12
+    MAX_COMMODINES = 2
+
     def __init__(self):
         self._cards_list = []
 
@@ -150,8 +151,8 @@ class Deck:
     def _initialize_deck(self):
         cards = []
         # Adds all non-commpdin cards
-        for number in range(1,MAX_NUMBER + 1):
-            for kind in KINDS.keys():
+        for number in range(1,Cards.MAX_NUMBER + 1):
+            for kind in Cards.KINDS.keys():
                 cards.append(Card(number, kind))
         cards = Cards.from_list_of_cards(cards)
         cards.shuffle_cards()
@@ -192,6 +193,9 @@ class Player:
 
 
 class Game:
+    MAX_SCORE = 100
+    CARDS_IN_HAND = 7
+    CUT_TYPES = ['no_cut', 'normal_cut', "zero_cut", 'conga_cut']
     def __init__(self, players):
         self.players = players
         self.winner = None

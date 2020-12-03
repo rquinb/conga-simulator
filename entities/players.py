@@ -1,5 +1,5 @@
 import numpy as np
-from entities.game_entities import Player
+from entities.game_entities import Player, Game
 from entities.card_processors import CardsGrouper
 
 class ValueImpactAnalysis:
@@ -11,9 +11,10 @@ class ValueImpactAnalysis:
 
 
 class ConservativeMinRest(Player):
-    def __init__(self, name, is_hand=False):
+    def __init__(self, name, is_hand=False, max_rest_for_cutting=10):
         super().__init__(name, is_hand)
         self.rest_value = None
+        self.max_rest_for_cutting = max_rest_for_cutting
 
     def value_of_current_hand(self):
         cards_grouper = CardsGrouper()
@@ -45,7 +46,7 @@ class ConservativeMinRest(Player):
         value_analysis = self._analyze_card_impact_on_value(card)
         self.rest_value = value_analysis.rest_value
         self.cards.receive_card(card)
-        if self.rest_value < 10 and self.score + self.rest_value < 100:
+        if self.rest_value < self.max_rest_for_cutting and self.score + self.rest_value < Game.MAX_SCORE:
             self.play_cut(value_analysis.potential_cut_type)
         return self.cards.drop_cards(value_analysis.less_valuable_card)
 
