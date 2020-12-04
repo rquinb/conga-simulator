@@ -6,7 +6,7 @@
             </b-col>
         </b-row>
         <b-row class="row-height justify-content-center">
-            <b-col class="scrollable-column mh-100" :md="displayGames ? 6: 8">
+            <b-col :class="displayGames ? 'scrollable-column mh-100' : ''" :md="displayGames ? 6: 8">
                 <b-card class="gradient-background statistics-card text-center shadow-lg">
                     <div class="game-title">
                         <b-card-title>Estadisticas</b-card-title>
