@@ -5,8 +5,8 @@
                 <b-button :class="displayGames ? 'btn-danger': 'btn-success'" @click="toggleDisplayGames"> {{gamesButtonText}}</b-button>
             </b-col>
         </b-row>
-        <b-row class="row-height">
-            <b-col class="scrollable-column mh-100" md="6">
+        <b-row class="row-height justify-content-center">
+            <b-col class="scrollable-column mh-100" :md="displayGames ? 6: 8">
                 <b-card class="gradient-background statistics-card text-center shadow-lg">
                     <div class="game-title">
                         <b-card-title>Estadisticas</b-card-title>
@@ -69,15 +69,15 @@
                     </div>
                 </b-card>
             </b-col>
-            <b-col md="6" class="scrollable-column mh-100">
-                <template v-if="displayGames">
-                    <game v-for="(game, index) in statistics.games_report" 
-                        :game="game" :key="index" 
-                        :namePlayer1="statistics.name_player_1"
-                        :namePlayer2="statistics.name_player_2" >
-                    </game>
-                </template>
-            </b-col>
+            <template v-if="displayGames">
+                <b-col md="6" class="scrollable-column mh-100">
+                        <game v-for="(game, index) in statistics.games_report" 
+                            :game="game" :key="index" 
+                            :namePlayer1="statistics.name_player_1"
+                            :namePlayer2="statistics.name_player_2" >
+                        </game>
+                </b-col>
+            </template>
         </b-row>
     </b-container>
 </template>
