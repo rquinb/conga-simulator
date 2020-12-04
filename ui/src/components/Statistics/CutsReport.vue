@@ -1,6 +1,7 @@
 <script>
 
 import { Doughnut } from 'vue-chartjs'
+import {getLabels} from './cutLabels.js'
 
 export default {
   name: "cuts-report",
@@ -36,7 +37,7 @@ methods:{
         return values
     },
     labels(){
-        return Object.keys(this.playerCuts).map((value)=> value == "no_cut" ? "Sin corte" : value == "normal_cut" ? "Corte normal" : value == "zero_cut" ? "Corte en Cero" : "Conga")
+        return getLabels(Object.keys(this.playerCuts))
     },
     backgroundColors(){
         console.log(Object.keys(this.playerCuts).map((value)=> value == "no_cut" ? "black" : value == "normal_cut" ? "lightgreen" : value == "zero_cut" ? "green" : "darkgreen"))

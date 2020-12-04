@@ -50,6 +50,15 @@
                     </div>
                     <div class="game-information">
                         <div class="section-title">
+                            <b-card-title>Comparacion de cantidad de cortes por jugador</b-card-title>
+                            <cut-types-comparison 
+                                :namePlayer1="statistics.name_player_1" :cutsPlayer1="statistics.player_1_cuts" 
+                                :namePlayer2="statistics.name_player_2" :cutsPlayer2="statistics.player_2_cuts">
+                            </cut-types-comparison>
+                        </div>
+                    </div>
+                    <div class="game-information">
+                        <div class="section-title">
                             <b-card-title>Detalle de tipos de corte por jugador</b-card-title>
                         </div>
                         <b-card class="gradient-background statistics-card text-center">
@@ -88,6 +97,7 @@ import Game from './Game.vue'
 import WinnersProportion from './WinnersProportion.vue'
 import RoundsHistogram from './RoundsHistogram.vue'
 import CutsReport from './CutsReport.vue'
+import CutTypesComparison from './CutTypesComparison.vue'
 
 export default {
   name: 'statistics',
@@ -99,7 +109,8 @@ export default {
       Game,
       WinnersProportion,
       RoundsHistogram,
-      CutsReport
+      CutsReport,
+      CutTypesComparison
   },
   data(){
       return {
