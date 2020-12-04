@@ -4,36 +4,16 @@
             <b-col>
                 <b-card class="text-center simulator-form-element gradient-background">
                     <b-card-title>CONGA SIMULATOR</b-card-title>
-                    <b-form-group label="Jugador 1" >
-                        <b-input-group prepend="Jugador 1">
-                            <b-form-input  class="simulator-form-element input-player input-player-1" v-model="gameConfig.players.playerOne.name" trim></b-form-input>
-                        </b-input-group>
-                        <b-input-group prepend="Tipo de Agente">
-                            <b-form-select v-model="gameConfig.players.playerOne.agentType.selected" :options="gameConfig.players.playerOne.agentType.options"></b-form-select>
-                        </b-input-group>
-                        <b-input-group class="md-2" prepend="Rango de cartas aceptados" :append="`Min: ${gameConfig.players.playerOne.acceptedCardsRange.minCard} | Max: ${gameConfig.players.playerOne.acceptedCardsRange.maxCard}`">
-                            <b-form-input id="min-1" v-model="gameConfig.players.playerOne.acceptedCardsRange.minCard" type="range" min="1" max="12" step="1"></b-form-input>
-                            <b-form-input id="max-1" v-model="gameConfig.players.playerOne.acceptedCardsRange.maxCard" type="range" min="1" max="12" step="1"></b-form-input>
-                        </b-input-group>
-                        <b-input-group prepend="Maximo valor antes de cortar" :append="gameConfig.players.playerOne.maxRestBeforeCutting">
-                            <b-form-input id="max-cut-rest-1" v-model="gameConfig.players.playerOne.maxRestBeforeCutting" type="range" min="0" max="10" step="1"></b-form-input>
-                        </b-input-group>
-                    </b-form-group>
-                    <b-form-group label="Jugador 2" >
-                        <b-input-group prepend="Jugador 2">
-                            <b-form-input  class="simulator-form-element input-player input-player-2" v-model="gameConfig.players.playerTwo.name" trim></b-form-input>
-                        </b-input-group>
-                        <b-input-group prepend="Tipo de Agente">
-                            <b-form-select v-model="gameConfig.players.playerTwo.agentType.selected" :options="gameConfig.players.playerTwo.agentType.options"></b-form-select>
-                        </b-input-group>
-                        <b-input-group class="md-2" prepend="Rango de cartas aceptados" :append="`Min: ${gameConfig.players.playerTwo.acceptedCardsRange.minCard} | Max: ${gameConfig.players.playerTwo.acceptedCardsRange.maxCard}`">
-                            <b-form-input id="min-2" v-model="gameConfig.players.playerTwo.acceptedCardsRange.minCard" type="range" min="1" max="12" step="1"></b-form-input>
-                            <b-form-input id="max-2" v-model="gameConfig.players.playerTwo.acceptedCardsRange.maxCard" type="range" min="1" max="12" step="1"></b-form-input>
-                        </b-input-group>
-                        <b-input-group prepend="Maximo valor antes de cortar" :append="gameConfig.players.playerTwo.maxRestBeforeCutting">
-                            <b-form-input id="max-cut-rest-2" v-model="gameConfig.players.playerTwo.maxRestBeforeCutting" type="range" min="0" max="10" step="1"></b-form-input>
-                        </b-input-group>
-                    </b-form-group>
+                        <player-form 
+                            FormTitle="Jugador 1" 
+                            :playerNum="1"
+                            @updatePlayer="handleUpdatePlayer">
+                        </player-form>
+                        <player-form 
+                            FormTitle="Jugador 2" 
+                            :playerNum="2"
+                            @updatePlayer="handleUpdatePlayer">
+                        </player-form>
                     <b-form-group id="games-number" label="Numero de juegos a simular" label-for="games-number">
                         <b-form-input id="games-number" v-model="gameConfig.numberOfGames" type="range" min="0" max="1000"></b-form-input>
                         <span>Juegos: <span style="font-weight:bold">{{gameConfig.numberOfGames}}</span></span>
@@ -59,6 +39,7 @@
 <script>
 import axios from 'axios';
 import PingPong from 'vue-loading-spinner/src/components/PingPong.vue'
+import PlayerForm from './PlayerForm.vue'
 import Statistics from './Statistics/Statistics.vue'
 export default {
     title: 'Conga Simulator',
@@ -69,47 +50,26 @@ export default {
             statistics: {},
             gameConfig: {
                 players: {
-                    playerOne: {
-                        name: "",
-                        agentType: {
-                            selected: null,
-                            options: [
-                            { value: null, text: 'Seleccione un tipo de agente' },
-                            { value: 'conservative_chooser', text: 'Conservador' }
-                            ]
-                        },
-                        acceptedCardsRange: {
-                            minCard: 1,
-                            maxCard: 12
-                        },
-                        maxRestBeforeCutting: 10
-                    },
-                    playerTwo: {
-                        name: "",
-                        agentType: {
-                            selected: null,
-                            options: [
-                            { value: null, text: 'Seleccione un tipo de agente' },
-                            { value: 'conservative_chooser', text: 'Conservador' }
-                            ]
-                        },
-                        acceptedCardsRange: {
-                            minCard: 1,
-                            maxCard: 12
-                        },
-                        maxRestBeforeCutting: 10
-                    } 
+                    playerOne: {},
+                    playerTwo: {} 
                 },
                 numberOfGames: 0
             },
-
         }
     },
     components:{
         Statistics,
-        PingPong
+        PingPong,
+        PlayerForm
     },
     methods:{
+        handleUpdatePlayer(event){
+            if(event.number == 1){
+                this.gameConfig.players.playerOne = event;
+            }else{
+                this.gameConfig.players.playerTwo = event;
+            }
+        },
         getGames(){
             this.displayStatistics = false;
             this.displayLoadingSpinner = true;
