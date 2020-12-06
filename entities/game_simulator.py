@@ -8,10 +8,10 @@ class GamesSimulator:
     def simulate_games(self, number_of_games, player_1, player_2):
         games = []
         for _ in range(number_of_games):
-            games.append(self._simulate_game(player_1, player_2))
+            games.append(self.simulate_game(player_1, player_2))
         return games
 
-    def _simulate_game(self, player_1, player_2):
+    def simulate_game(self, player_1, player_2):
         # Starts a new game
         game = Game(players=[copy.deepcopy(player_1), copy.deepcopy(player_2)])
         while True:

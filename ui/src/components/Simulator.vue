@@ -22,6 +22,9 @@
                         <b-button @click="getGames"><b-spinner small type="grow" v-if="displayLoadingSpinner"></b-spinner>{{simulateButtonText}}</b-button>
                     </div>
                     <template v-if="displayLoadingSpinner">
+                        <div class="simulation">
+                            <b-progress :value="simulationStatus.simulationProgress.current_simulation" :max="simulationStatus.simulationProgress.total" show-progress animated></b-progress>
+                        </div>
                         <div class="loading-element">
                             <ping-pong class="spinner" size="150px"></ping-pong>
                         </div>
@@ -55,6 +58,15 @@ export default {
                 },
                 numberOfGames: 0
             },
+            simulationStatus: {
+                simulationRunning : false,
+                pollingInterval: null,
+                taskStatusUrl: "",
+                simulationProgress: {
+                    current_simulation: 0,
+                    total: 0 
+                }
+            }
         }
     },
     components:{
@@ -96,9 +108,11 @@ export default {
                         "maxRestBeforeCutting": parseInt(this.gameConfig.players.playerTwo.maxRestBeforeCutting)
                     }
             }).then((response) => {
-                this.statistics = response.data.games;
-                this.displayLoadingSpinner = false;
-                this.displayStatistics = true;
+                console.log(response.headers)
+                this.simulationStatus.taskStatusUrl = response.headers['location'];
+                this.simulationStatus.simulationRunning = true;
+                console.log(this.simulationStatus.taskStatusUrl)
+
             }).catch(() => {
                 this.displayLoadingSpinner = false;
             });
@@ -108,12 +122,43 @@ computed:{
     simulateButtonText(){
         return this.displayLoadingSpinner ? "Simulando juegos...": "SIMULAR JUEGOS";
     }
-  }
+  },
+  watch: {
+    "simulationStatus.simulationRunning": function(val) {
+        console.log(val)
+        if (val) {
+            this.simulationStatus.pollingInterval = setInterval(() => {
+                axios.get(this.simulationStatus.taskStatusUrl).then((response)=>{
+                    this.simulationStatus.simulationProgress.current_simulation = response.data.current_simulation;
+                    this.simulationStatus.simulationProgress.total = response.data.total;
+                    if(response.data.state == "FAILURE"){
+                        this.displayLoadingSpinner = false;
+                        this.simulationStatus.simulationRunning = false;
+                        clearInterval(this.simulationStatus.pollingInterval)
+                    }
+                    if(response.data.result){
+                        this.statistics = response.data.result;
+                        this.displayLoadingSpinner = false;
+                        this.simulationStatus.simulationRunning = false;
+                        this.displayStatistics = true;
+                        clearInterval(this.simulationStatus.pollingInterval)
+                    }
+                })
+            }, 500);
+        } else {
+            clearInterval(this.simulationStatus.pollingInterval);
+            }
+        }
+    }
 }
 </script>
 <style>
+
     .gradient-background {
         background-image: linear-gradient(to bottom, rgba(250, 212, 212, 0.651), rgba(250, 212, 212, 0.986));
+    }
+    .simulation{
+        margin-top: 3%;
     }
     .loading-element{
         width: 100%;

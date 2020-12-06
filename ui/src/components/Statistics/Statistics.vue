@@ -6,7 +6,7 @@
             </b-col>
         </b-row>
         <b-row class="row-height justify-content-center">
-            <b-col :class="displayGames ? 'scrollable-column mh-100' : ''" :md="displayGames ? 6: 8">
+            <b-col :md="displayGames ? 6: 8">
                 <b-card class="gradient-background statistics-card text-center shadow-lg">
                     <div class="game-title">
                         <b-card-title>Estadisticas</b-card-title>
@@ -79,12 +79,13 @@
                 </b-card>
             </b-col>
             <template v-if="displayGames">
-                <b-col md="6" class="scrollable-column mh-100">
-                        <game v-for="(game, index) in statistics.games_report" 
-                            :game="game" :key="index" 
-                            :namePlayer1="statistics.name_player_1"
-                            :namePlayer2="statistics.name_player_2" >
-                        </game>
+                <b-col md="6">
+                    <b-pagination v-model="games.currentPage" :total-rows="rows" :per-page="games.perPage"></b-pagination>
+                    <game v-for="(game, index) in statistics.games_report.slice(games.perPage * (games.currentPage - 1), games.perPage * games.currentPage)" 
+                        :game="game" :key="index" 
+                        :namePlayer1="statistics.name_player_1"
+                        :namePlayer2="statistics.name_player_2" >
+                    </game>
                 </b-col>
             </template>
         </b-row>
@@ -114,7 +115,12 @@ export default {
   },
   data(){
       return {
-        displayGames : false
+        displayGames : false,
+        games:{
+            perPage: 6,
+            currentPage: 1,
+            gamesReport: this.statistics.games_report
+        }
       }
   },
   methods:{
@@ -125,6 +131,9 @@ export default {
   computed:{
     gamesButtonText(){
         return this.displayGames ? "Ocultar detalle de Juegos": "Mostrar detalle de Juegos"
+    },
+    rows(){
+        return this.games.gamesReport.length
     }
   }
 }
