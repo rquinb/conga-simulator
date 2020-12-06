@@ -146,6 +146,7 @@ export default {
     }
     .statistics-card{
         font-size: large;
+        margin-top: 6%;
     }
     .game-information{
         text-align: center;

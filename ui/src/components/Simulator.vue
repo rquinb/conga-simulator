@@ -23,7 +23,11 @@
                     </div>
                     <template v-if="displayLoadingSpinner">
                         <div class="simulation">
-                            <b-progress :value="simulationStatus.simulationProgress.current_simulation" :max="simulationStatus.simulationProgress.total" show-progress animated></b-progress>
+                            <b-progress :max="simulationStatus.simulationProgress.total" animated>
+                                <b-progress-bar :value="simulationStatus.simulationProgress.current_simulation">
+                                    <span>Simulando <strong>{{ simulationStatus.simulationProgress.current_simulation }} de {{ simulationStatus.simulationProgress.total }} juegos</strong></span>
+                                </b-progress-bar>
+                            </b-progress>
                         </div>
                         <div class="loading-element">
                             <ping-pong class="spinner" size="150px"></ping-pong>
