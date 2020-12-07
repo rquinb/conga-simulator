@@ -14,6 +14,8 @@ services:
       dockerfile: Dockerfile
     ports:
       - 5000:5000
+    depends_on:
+      - database
   celery-worker:
     build:
       context: ./
@@ -23,3 +25,16 @@ services:
     image: redis:6-buster
     ports:
       - 6379:6379
+  database:
+    image: postgres
+    environment:
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=pass
+      - POSTGRES_DB=simulator
+    volumes:
+      - database-data:/var/lib/postgresql/data/
+      - ./sql:/docker-entrypoint-initdb.d
+    ports:
+      - 5432:5432
+volumes:
+  database-data:

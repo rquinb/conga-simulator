@@ -89,7 +89,7 @@ export default {
         getGames(){
             this.displayStatistics = false;
             this.displayLoadingSpinner = true;
-            axios.post('http://localhost:5000/games-simulation',{
+            axios.post(`${process.env.VUE_APP_API_URL}/games-simulations`,{
                     "numberOfGames": parseInt(this.gameConfig.numberOfGames),
                     "player1": {
                         "name": this.gameConfig.players.playerOne.name,
