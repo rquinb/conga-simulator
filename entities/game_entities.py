@@ -1,6 +1,6 @@
 import random
 import game_exceptions
-from collections import Sequence
+from collections.abc import Sequence
 
 
 class Card:
@@ -181,7 +181,6 @@ class Game:
     def report_results(self):
         return {"score_evolution": self.results,
                 "winner":self.players[self.winner].name}
-
 
 
 class Cut:

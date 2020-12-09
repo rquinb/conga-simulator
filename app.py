@@ -69,7 +69,6 @@ def get_task_status(task_id):
 
     return flask.jsonify(status)
 
-
 @celery.task(bind=True)
 def simulate_games(self, number_of_games, player_1_data, player_2_data):
     player_1 = PlayerBuilder().build_player(name=player_1_data['name'],
@@ -92,7 +91,6 @@ def simulate_games(self, number_of_games, player_1_data, player_2_data):
                                            mean_rounds_per_game=games_statistics['mean_rounds_per_game'],
                                            details=games_statistics)
     return {'current_simulation': number_of_games, 'total': number_of_games, 'result': games_statistics}
-
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0')
