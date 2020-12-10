@@ -82,13 +82,14 @@ class Cards(Sequence):
                 raise TypeError
             if isinstance(cards, Card):
                 cards = Cards.from_list_of_cards([cards])
-            deleted_cards = []
+            cards_to_delete = []
             for card in cards:
                 if card in self._cards_list:
-                    deleted_cards.append(self._cards_list.pop(self._index_of(card)))
-            if not deleted_cards:
-                raise game_exceptions.CardNotFound(f'Cards not found in list. Cannot drop')
-            elif len(deleted_cards) == 1:
+                    cards_to_delete.append(card)
+                else:
+                    raise game_exceptions.CardNotFound(f'Card: {card} not found in list. Cannot drop cards')
+            deleted_cards = [self._cards_list.pop(self._index_of(card)) for card in cards_to_delete]
+            if len(deleted_cards) == 1:
                 return deleted_cards.pop()
             else:
                 return Cards.from_list_of_cards(deleted_cards)
