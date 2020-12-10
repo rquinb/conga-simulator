@@ -33,6 +33,9 @@ class Card:
     def __eq__(self, other_card):
         return self.number == other_card.number and self.kind == other_card.kind
 
+    def __hash__(self):
+        return hash(self.to_string())
+
 
 class Cards(Sequence):
     KINDS = {"E": "espada", "O": "oro", "B": "basto", "C": "copa"}
@@ -59,8 +62,7 @@ class Cards(Sequence):
         for index, current_card in enumerate(self._cards_list):
             if card ==  current_card:
                 return index
-        else:
-            return None
+        return None
 
     def get_copy(self):
         return Cards.from_list_of_cards(self._cards_list)
@@ -103,6 +105,11 @@ class Cards(Sequence):
 
     def shuffle_cards(self):
         random.shuffle(self._cards_list)
+
+    def __eq__(self, other):
+        set_cards = set(self)
+        set_other_cards = set(other)
+        return set_cards == set_other_cards
 
 
 class CardGroup:
