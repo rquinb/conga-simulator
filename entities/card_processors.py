@@ -57,6 +57,6 @@ class CardsGrouper:
         # Remove "ladder" cards from collection
         for ladder in ladders:
             games.append(cards.drop_cards(ladder))
-        # Add ungrouped rest of cards to groupes list
+        # Add ungrouped rest of cards to groups list
         card_group = CardGroup(games=games, rest=cards)
         return card_group
