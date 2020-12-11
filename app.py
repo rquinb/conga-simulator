@@ -2,7 +2,7 @@ import os
 import datetime
 import flask
 import psycopg2.extensions
-from psycopg2.extras import DictCursor
+from psycopg2.extras import RealDictCursor
 from http import HTTPStatus
 from celery import Celery
 from flask_cors import CORS
@@ -29,7 +29,7 @@ db_connection = repositories.DatabaseConnection(max_wait_seconds=15).connect_to_
                                                                                    host=HOST,
                                                                                    port=PORT,
                                                                                    database="simulator",
-                                                                                   cursor_factory=DictCursor)
+                                                                                   cursor_factory=RealDictCursor)
 simulations_repository = repositories.SimulationsRepository(db_connection)
 @app.route('/deck', methods=['GET'])
 def get_deck():
@@ -45,7 +45,6 @@ def get_simulation(simulation_id):
 def get_simulations():
     simulations = simulations_repository.get_simulations()
     return flask.jsonify({'result': simulations}), HTTPStatus.OK
-
 
 @app.route('/games-simulations', methods=['POST'])
 def make_simulation():
