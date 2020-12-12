@@ -3,7 +3,7 @@ import App from './App.vue'
 import VueRouter from "vue-router";
 import titleMixin from './mixins/titleMixin.js'
 import Main from './components/Main.vue';
-import Simulator from './components/Simulator.vue';
+import SimulationsPage from './SimulationsPage.vue'
 import StatisticsPage from './components/StatisticsPage.vue';
 import StatisticsTable from './components/StatisticsTable.vue';
 import { BootstrapVue, IconsPlugin } from 'bootstrap-vue'
@@ -25,8 +25,8 @@ const router = new VueRouter({
     },
     {
       path: '/simulator',
-      component: Simulator,
-      name: "Simulator"
+      component: SimulationsPage,
+      name: "SimulationsPage"
     },
     {
       path: '/games-statistics/:simulationId',

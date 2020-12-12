@@ -5,7 +5,7 @@
                 <b-col>
                     <b-card>
                         <b-card-title>Historial de Simulaciones</b-card-title>
-                        <b-table class="gradient-background game-table text-center" 
+                        <b-table class="gradient-background game-table" 
                             selectable
                             select-mode="single"
                             :items="items"
@@ -26,6 +26,7 @@ export default {
     data(){
         return {
             displayStatistics: false,
+            statistics: {},
             fields: [
                   {key:'simulation_id', label:'Id'}, 
                   {key:'created', label:'Fecha'},
@@ -48,7 +49,7 @@ export default {
             });
         },
         onRowSelected(item){
-            this.$router.push(`games-statistics/${item[0].simulation_id}`)
+            this.$emit('displayStatistics', item[0].details);
         }
     },
     created() {

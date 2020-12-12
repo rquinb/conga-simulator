@@ -14,7 +14,7 @@ export default {
         return {
             displayStatistics: false,
             simulationId: this.$route.params.simulationId,
-            statistics: {},
+            statistics: {}
         }
     },
     components:{
