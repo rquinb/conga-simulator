@@ -10,6 +10,15 @@ COPY *py ./
 COPY tests/ ./tests/
 RUN . conga-env/bin/activate && python -m pytest -v --cov-report term --cov=. --cov-config=.coverage-config tests/
 
+FROM python:3.7-buster as lint
+WORKDIR /usr/src/app
+COPY --from=unit-tests /usr/src/app/conga-env ./conga-env
+COPY entities/ ./entities
+COPY .pylintrc ./.pylintrc
+RUN pip install pylint
+RUN pylint --rcfile=.pylintrc entities/
+
+
 FROM python:3.7-buster
 WORKDIR /usr/src/app
 COPY --from=unit-tests /usr/src/app/conga-env ./conga-env

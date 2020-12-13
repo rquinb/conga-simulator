@@ -2,12 +2,13 @@ import numpy as np
 from entities.game_entities import Cards, Game, Cut
 from entities.card_processors import CardsGrouper
 
+
 class PlayerBuilder:
 
-    def build_player(self, name, agent_type="conservative_chooser", accepted_cards_range=None, max_rest_for_cutting=None):
+    def build_player(self, name, agent_type="conservative_chooser", accepted_cards_range=None,
+                     max_rest_for_cutting=None):
         if agent_type == "conservative_chooser":
-            constructor_params = {}
-            constructor_params['name'] = name
+            constructor_params = {'name': name}
             if accepted_cards_range:
                 if len(accepted_cards_range) == 2:
                     constructor_params["min_card_number_accepted"] = accepted_cards_range[0]
@@ -15,13 +16,14 @@ class PlayerBuilder:
             if max_rest_for_cutting:
                 constructor_params["max_rest_for_cutting"] = max_rest_for_cutting
             return self._build_conservative_chooser(**constructor_params)
-        else:
-            raise ValueError(f'Invalid agent type: "{agent_type}" is not an existent agent_type')
+        raise ValueError(f'Invalid agent type: "{agent_type}" is not an existent agent_type')
 
-    def _build_conservative_chooser(self, name, min_card_number_accepted, max_card_number_accepted, max_rest_for_cutting):
+    @staticmethod
+    def _build_conservative_chooser(name, min_card_number_accepted, max_card_number_accepted,
+                                    max_rest_for_cutting):
         return ConservativeMinRest(name=name,
-                                   min_card_number_accepted= min_card_number_accepted,
-                                   max_card_number_accepted= max_card_number_accepted,
+                                   min_card_number_accepted=min_card_number_accepted,
+                                   max_card_number_accepted=max_card_number_accepted,
                                    max_rest_for_cutting=max_rest_for_cutting)
 
 
@@ -100,7 +102,7 @@ class ConservativeMinRest(Player):
     def make_move(self, deck):
         if deck.dropped_cards:
             candidate_card = deck.dropped_cards.drop_cards()
-            is_between_acceptable_number_range = candidate_card.number >= self.min_card_number_accepted and candidate_card.number <= self.max_card_number_accepted
+            is_between_acceptable_number_range = self.min_card_number_accepted <= candidate_card.number <= self.max_card_number_accepted
             analysis = self._analyze_card_impact_on_value(candidate_card)
             if analysis.has_value_improved and is_between_acceptable_number_range:
                 deck.play_card(self._play(candidate_card))
@@ -109,7 +111,7 @@ class ConservativeMinRest(Player):
                 deck.play_card(candidate_card)
         if not self.played_dropped_card:
             candidate_card = deck.retrieve_card()
-            is_between_acceptable_number_range = candidate_card.number >= self.min_card_number_accepted and candidate_card.number <= self.max_card_number_accepted
+            is_between_acceptable_number_range = self.min_card_number_accepted <= candidate_card.number <= self.max_card_number_accepted
             analysis = self._analyze_card_impact_on_value(candidate_card)
             if analysis.has_value_improved and is_between_acceptable_number_range:
                 deck.play_card(self._play(candidate_card))

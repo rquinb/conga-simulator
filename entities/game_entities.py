@@ -1,25 +1,26 @@
 import random
-import game_exceptions
 from collections.abc import Sequence
+import game_exceptions
+
 
 
 class Card:
     def __init__(self, number=None, kind=None, commodin=False):
         self.number = self._set_number(number) if number else number
         self.kind = self._set_kind(kind) if kind else kind
-        self.commodin= commodin
+        self.commodin = commodin
 
-    def _set_number(self, number):
+    @staticmethod
+    def _set_number(number):
         if number <= Cards.MAX_NUMBER:
             return number
-        else:
-            raise game_exceptions.InvalidCardNumber(f"Please provide a number less than or equal to {Cards.MAX_NUMBER}")
+        raise game_exceptions.InvalidCardNumber(f"Please provide a number less than or equal to {Cards.MAX_NUMBER}")
 
-    def _set_kind(self, kind):
+    @staticmethod
+    def _set_kind(kind):
         if kind in Cards.KINDS.keys():
             return kind
-        else:
-            raise game_exceptions.InvalidCardKind(f"Please provide a valid kind: It should be one of {Cards.KINDS}")
+        raise game_exceptions.InvalidCardKind(f"Please provide a valid kind: It should be one of {Cards.KINDS}")
 
     def to_string(self):
         return f"{self.number} de {Cards.KINDS.get(self.kind)}" if not self.commodin else "Comodin"
@@ -60,7 +61,7 @@ class Cards(Sequence):
 
     def _index_of(self, card):
         for index, current_card in enumerate(self._cards_list):
-            if card ==  current_card:
+            if card == current_card:
                 return index
         return None
 
@@ -78,7 +79,7 @@ class Cards(Sequence):
 
     def drop_cards(self, cards=None):
         if cards:
-            if not (isinstance(cards,Card) or isinstance(cards,Cards)):
+            if not isinstance(cards, (Card, Cards)):
                 raise TypeError
             if isinstance(cards, Card):
                 cards = Cards.from_list_of_cards([cards])
@@ -91,12 +92,10 @@ class Cards(Sequence):
             deleted_cards = [self._cards_list.pop(self._index_of(card)) for card in cards_to_delete]
             if len(deleted_cards) == 1:
                 return deleted_cards.pop()
-            else:
-                return Cards.from_list_of_cards(deleted_cards)
-        elif self._cards_list:
+            return Cards.from_list_of_cards(deleted_cards)
+        if self._cards_list:
             return self._cards_list.pop()
-        else:
-            raise game_exceptions.EmptyListOfCards('Card list is empty. Cannot remove more cards')
+        raise game_exceptions.EmptyListOfCards('Card list is empty. Cannot remove more cards')
 
     def group_by_kind(self):
         kind_groups = {}
@@ -116,6 +115,7 @@ class Cards(Sequence):
 class CardGroup:
     COMMODIN_VALUE = 20
     ZERO_REST_VALUE = -10
+
     def __init__(self, games, rest):
         self.games = games
         self.rest = rest
@@ -145,10 +145,9 @@ class CardGroup:
     def find_type_of_cut(self):
         if self._has_conga():
             return "conga_cut"
-        elif self._has_cut_in_zero():
+        if self._has_cut_in_zero():
             return "zero_cut"
-        else:
-            return "normal_cut"
+        return "normal_cut"
 
 
 class Deck:
@@ -156,11 +155,12 @@ class Deck:
         self.cards_in_deck = self._initialize_deck()
         self.dropped_cards = Cards()
 
-    def _initialize_deck(self):
+    @staticmethod
+    def _initialize_deck():
         cards = []
         # Adds all non-commpdin cards
-        for number in range(1,Cards.MAX_NUMBER + 1):
-            for kind in Cards.KINDS.keys():
+        for number in range(1, Cards.MAX_NUMBER + 1):
+            for kind in Cards.KINDS:
                 cards.append(Card(number, kind))
         cards = Cards.from_list_of_cards(cards)
         cards.shuffle_cards()
@@ -180,6 +180,7 @@ class Game:
     MAX_SCORE = 100
     CARDS_IN_HAND = 7
     CUT_TYPES = ['no_cut', 'normal_cut', "zero_cut", 'conga_cut']
+
     def __init__(self, players):
         self.players = players
         self.winner = None
@@ -188,7 +189,7 @@ class Game:
 
     def report_results(self):
         return {"score_evolution": self.results,
-                "winner":self.players[self.winner].name}
+                "winner": self.players[self.winner].name}
 
 
 class Cut:

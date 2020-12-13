@@ -31,20 +31,25 @@ db_connection = repositories.DatabaseConnection(max_wait_seconds=15).connect_to_
                                                                                    database="simulator",
                                                                                    cursor_factory=RealDictCursor)
 simulations_repository = repositories.SimulationsRepository(db_connection)
+
+
 @app.route('/deck', methods=['GET'])
 def get_deck():
     deck = Deck()
     return flask.jsonify({"cards": [card.to_string() for card in deck.cards_in_deck]})
+
 
 @app.route('/games-simulations/<simulation_id>', methods=['GET'])
 def get_simulation(simulation_id):
     simulation = simulations_repository.get_simulation(simulation_id)
     return flask.jsonify(simulation), HTTPStatus.OK
 
+
 @app.route('/games-simulations', methods=['GET'])
 def get_simulations():
     simulations = simulations_repository.get_simulations()
     return flask.jsonify({'result': simulations}), HTTPStatus.OK
+
 
 @app.route('/games-simulations', methods=['POST'])
 def make_simulation():
@@ -54,6 +59,7 @@ def make_simulation():
     player_2_data = request_body['player2']
     task = simulate_games.delay(number_of_games, player_1_data, player_2_data)
     return flask.jsonify({}), HTTPStatus.ACCEPTED, {'Location': flask.url_for('get_task_status', task_id=task.id)}
+
 
 @app.route('/games-simulations/task/<task_id>')
 def get_task_status(task_id):
@@ -67,6 +73,7 @@ def get_task_status(task_id):
             status['result'] = task.info['result']
 
     return flask.jsonify(status)
+
 
 @celery.task(bind=True)
 def simulate_games(self, number_of_games, player_1_data, player_2_data):
@@ -90,6 +97,7 @@ def simulate_games(self, number_of_games, player_1_data, player_2_data):
                                            mean_rounds_per_game=games_statistics['mean_rounds_per_game'],
                                            details=games_statistics)
     return {'current_simulation': number_of_games, 'total': number_of_games, 'result': games_statistics}
+
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0')

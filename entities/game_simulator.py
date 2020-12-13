@@ -37,7 +37,8 @@ class GamesSimulator:
                 break
         return game
 
-    def _simulate_round(self, game, deck):
+    @staticmethod
+    def _simulate_round(game, deck):
         current_player = 0
         while True:
             # Starts a new move
@@ -50,24 +51,24 @@ class GamesSimulator:
                 game.players[0].score += game.players[0].rest_value
                 game.players[1].score += game.players[1].rest_value
                 game.results.append(
-                    {"player_1":{
-                        "points":game.players[0].score,
+                    dict(player_1={
+                        "points": game.players[0].score,
                         "cut": game.players[0].cut.kind if game.players[0].cut else None
-                        },
-                    "player_2":{
+                    }, player_2={
                         "points": game.players[1].score,
                         "cut": game.players[1].cut.kind if game.players[1].cut else None
-                        }
-                    }
+                    })
                 )
                 cut_info = {"player": current_player, "cut_kind": game.players[current_player].cut.kind}
                 game.players[current_player].cut = None
                 break
         return game, deck, cut_info
 
-    def compute_statistics(self,name_player_1, name_player_2, games):
+    @staticmethod
+    def compute_statistics(name_player_1, name_player_2, games):
         games_report = [game.report_results() for game in games]
         return GameStatistics(name_player_1, name_player_2, games_report).get_statistics()
+
 
 class GameStatistics:
     def __init__(self, name_player_1, name_player_2, games_report):
@@ -89,13 +90,16 @@ class GameStatistics:
     def _compute_statistics(self, games_report):
         self.number_of_games = len(games_report)
         self.rounds_per_game = [len(game['score_evolution']) for game in games_report]
-        self.mean_rounds_per_game = round(float(np.mean(self.rounds_per_game)),2)
+        self.mean_rounds_per_game = round(float(np.mean(self.rounds_per_game)), 2)
         self.max_rounds = max(self.rounds_per_game)
         self.min_rounds = min(self.rounds_per_game)
         self.rounds_histogram = self._histogram_to_dict(np.histogram(self.rounds_per_game, bins="sqrt"))
-        self.proportion_of_wins_player_1 = round(len([game for game in games_report if game["winner"] == self.name_player_1]) / self.number_of_games, 2)
+        self.proportion_of_wins_player_1 = round(
+            len([game for game in games_report if game["winner"] == self.name_player_1]) / self.number_of_games, 2)
         self.proportion_of_wins_player_2 = round(1 - self.proportion_of_wins_player_1, 2)
-        self.points_difference = [abs(game['score_evolution'][-1]['player_1']['points'] - game['score_evolution'][-1]['player_2']['points']) for game in games_report]
+        self.points_difference = [
+            abs(game['score_evolution'][-1]['player_1']['points'] - game['score_evolution'][-1]['player_2']['points'])
+            for game in games_report]
         self.max_points_difference = max(self.points_difference)
         self.min_points_difference = min(self.points_difference)
         self.player_1_cuts = self._cuts_report(games_report, "player_1")
@@ -103,22 +107,22 @@ class GameStatistics:
         self.games_report = games_report
 
     def get_statistics(self):
-        return {key: value for key,value in self.__dict__.items() if not key.startswith("_")}
+        return {key: value for key, value in self.__dict__.items() if not key.startswith("_")}
 
-    def _histogram_to_dict(self, histogram):
+    @staticmethod
+    def _histogram_to_dict(histogram):
         bins = []
         for i in range(len(list(histogram)[0])):
-            bins.append({f'{round(histogram[1][i],2)}-{round(histogram[1][i+1],2)}': int(histogram[0][i])})
+            bins.append({f'{round(histogram[1][i], 2)}-{round(histogram[1][i + 1], 2)}': int(histogram[0][i])})
         return bins
 
-    def _cuts_report(self, games_report, player_number):
+    @staticmethod
+    def _cuts_report(games_report, player_number):
         cuts = {key: 0 for key in Game.CUT_TYPES}
         for game in games_report:
-            for round in game['score_evolution']:
-                if not round[player_number]['cut']:
+            for game_round in game['score_evolution']:
+                if not game_round[player_number]['cut']:
                     cuts['no_cut'] += 1
                 else:
-                    cuts[round[player_number]['cut']] += 1
+                    cuts[game_round[player_number]['cut']] += 1
         return cuts
-
-

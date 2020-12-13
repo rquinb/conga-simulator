@@ -1,6 +1,7 @@
 import time
 import psycopg2
 
+
 class DatabaseConnection:
 
     def __init__(self, max_wait_seconds=15):
@@ -38,7 +39,7 @@ class SimulationsRepository:
                   'created_time': created_time,
                   'total_games': total_games,
                   'mean_rounds_per_game': mean_rounds_per_game,
-                  'details': details })
+                  'details': details})
 
     def get_simulation(self, simulation_id):
         with self._db_connection.cursor() as cursor:
@@ -46,7 +47,7 @@ class SimulationsRepository:
             SELECT id as simulation_id, created, total_games, mean_rounds_per_game, details
             FROM simulations
             WHERE id=%s
-            """,[simulation_id])
+            """, [simulation_id])
             return cursor.fetchone()
 
     def get_simulations(self):
@@ -56,6 +57,3 @@ class SimulationsRepository:
             FROM simulations
             """)
             return [row for row in cursor]
-
-
-
