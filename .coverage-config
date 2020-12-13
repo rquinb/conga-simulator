@@ -1,2 +1,2 @@
 [run]
-omit = tests/*, conga-env/*
+omit = tests/*, conga-env/*, app.py, game_exceptions.py, sandbox.py
