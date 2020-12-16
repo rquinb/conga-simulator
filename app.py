@@ -1,9 +1,9 @@
 import os
 import datetime
+from http import HTTPStatus
 import flask
 import psycopg2.extensions
 from psycopg2.extras import RealDictCursor
-from http import HTTPStatus
 from celery import Celery
 from flask_cors import CORS
 from entities import repositories
