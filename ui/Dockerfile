@@ -1,8 +1,13 @@
-FROM node:lts-alpine as lint
+FROM node:lts-alpine as unit-test
 WORKDIR /app
 COPY package*.json ./
 RUN npm install
 COPY . .
+RUN npm run test
+
+FROM node:lts-alpine as lint
+WORKDIR /app
+COPY --from=unit-test /app ./
 RUN npm run lint
 
 FROM node:lts-alpine as build
