@@ -1,7 +1,8 @@
 <template>
     <b-form-group :label="FormTitle" >
         <b-input-group :prepend="`Jugador ${playerNum}`">
-            <b-form-input  
+            <b-form-input
+                :id="`name-input-player-${playerNum}`"  
                 :class="playerNum == 1 ? 'simulator-form-element input-player input-player-1' : 'simulator-form-element input-player input-player-2'" 
                 v-model="player.name" 
                 trim
@@ -10,13 +11,15 @@
         </b-input-group>
         <b-input-group prepend="Tipo de Agente">
             <b-form-select 
+                :id="`type-of-agent-player-${playerNum}`"  
                 v-model="player.agentType.selected" 
                 :options="player.agentType.options"
                 @change="handleChange">
             </b-form-select>
         </b-input-group>
         <b-input-group class="md-2" prepend="Rango de cartas aceptados" :append="`Min: ${player.acceptedCardsRange.minCard} | Max: ${player.acceptedCardsRange.maxCard}`">
-            <b-form-input 
+            <b-form-input
+                :id="`min-accepted-cards-player-${playerNum}`"
                 v-model="player.acceptedCardsRange.minCard" 
                 type="range" 
                 min="1" 
@@ -24,7 +27,8 @@
                 step="1"
                 @change="handleChange">
             </b-form-input>
-            <b-form-input 
+            <b-form-input
+                :id="`max-accepted-cards-player-${playerNum}`"
                 v-model="player.acceptedCardsRange.maxCard" 
                 type="range" 
                 min="1" 
@@ -34,7 +38,8 @@
             </b-form-input>
         </b-input-group>
         <b-input-group prepend="Maximo valor antes de cortar" :append="player.maxRestBeforeCutting">
-            <b-form-input 
+            <b-form-input
+                :id="`max-cut-value-player-${playerNum}`"
                 v-model="player.maxRestBeforeCutting" 
                 type="range" 
                 min="0" 
