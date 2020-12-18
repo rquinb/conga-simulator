@@ -36,5 +36,17 @@ services:
       - ./sql:/docker-entrypoint-initdb.d
     ports:
       - 5432:5432
+  selenium-server:
+    image: selenium/standalone-firefox
+    ports:
+      - 4444:4444
+    volumes:
+      - /dev/shm:/dev/shm
+  ui-tests:
+    build:
+      context: ./
+      dockerfile: uitests.Dockerfile
+    command: bash -c "/usr/wait-for-it.sh frontend:8080 && /usr/wait-for-it.sh server:5000 && /usr/wait-for-it.sh selenium-server:4444 && behave"
+
 volumes:
   database-data:
