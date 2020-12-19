@@ -1,14 +1,9 @@
-import { BootstrapVue, IconsPlugin } from 'bootstrap-vue'
-import { mount, createLocalVue } from '@vue/test-utils'
+import { localVue } from './localVueConfiguration.js'
+import { mount } from '@vue/test-utils'
 import PlayerForm from "../src/components/PlayerForm.vue";
-
-const localVue = createLocalVue();
-localVue.use(BootstrapVue);
-localVue.use(IconsPlugin);
 
 describe("PlayerForm.test.js", () => {
   let wrapper;
-
   beforeEach(() => {
     wrapper = mount(PlayerForm, {
       localVue,

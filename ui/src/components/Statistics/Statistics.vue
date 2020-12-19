@@ -13,40 +13,41 @@
                         <b-list-group flush>
                             <b-list-group-item class="gradient-background">
                                 <span>Jugador 1: </span>
-                                <span class="data">{{statistics.name_player_1}}</span><span class="symbol-player-1">✪</span>
+                                <span class="data name-player-1">{{statistics.name_player_1}}</span><span class="symbol-player-1">✪</span>
                             </b-list-group-item>
                             <b-list-group-item class="gradient-background">
                                 <span>Jugador 2: </span>
-                                <span class="data">{{statistics.name_player_2}}</span><span class="symbol-player-2">✪</span>
+                                <span class="data name-player-2">{{statistics.name_player_2}}</span><span class="symbol-player-2">✪</span>
                             </b-list-group-item>
                             <b-list-group-item class="gradient-background">
                                 <span>Cantidad de juegos: </span>
-                                <span class="data">{{statistics.number_of_games}}</span>
+                                <span class="data number-of-games">{{statistics.number_of_games}}</span>
                             </b-list-group-item>
                         </b-list-group>
                     </div>
                     <div class="game-information">
                         <div class="section-title">
                             <b-card-title>Proporcion de juegos ganados</b-card-title>
-                            <winners-proportion :statistics="statistics"></winners-proportion>
+                            <winners-proportion class="winners-proportion" :statistics="statistics"></winners-proportion>
                         </div>
                     </div>
                     <div class="game-information">
                         <div class="section-title">
                             <b-card-title>Distribucion de longitud de Rounds</b-card-title>
-                            <rounds-histogram :statistics="statistics"></rounds-histogram>
+                            <rounds-histogram class="rounds-histogram" :statistics="statistics"></rounds-histogram>
                         </div>
                     </div>
                     <div class="game-information">
                         <div class="section-title">
                             <b-card-title>Detalle de longitud de Rounds</b-card-title>
-                            <rounds :statistics="statistics"></rounds>
+                            <rounds class="rounds-details" :statistics="statistics"></rounds>
                         </div>
                     </div>
                     <div class="game-information">
                         <div class="section-title">
                             <b-card-title>Comparacion de cantidad de cortes por jugador</b-card-title>
-                            <cut-types-comparison 
+                            <cut-types-comparison
+                                class="cuts-comparison" 
                                 :namePlayer1="statistics.name_player_1" :cutsPlayer1="statistics.player_1_cuts" 
                                 :namePlayer2="statistics.name_player_2" :cutsPlayer2="statistics.player_2_cuts">
                             </cut-types-comparison>
@@ -60,12 +61,12 @@
                             <b-container fluid>
                                 <b-row>
                                     <b-col md="6">
-                                        <b-card-title>{{statistics.name_player_1}}<b-card-title>
-                                        <cuts-report :playerCuts="statistics.player_1_cuts"></cuts-report>
+                                        <b-card-title>{{statistics.name_player_1}}</b-card-title>
+                                        <cuts-report class="cuts-report-player-1" :playerCuts="statistics.player_1_cuts"></cuts-report>
                                     </b-col>
                                     <b-col md="6">
-                                        <b-card-title>{{statistics.name_player_2}}<b-card-title>
-                                        <cuts-report :playerCuts="statistics.player_2_cuts"></cuts-report>
+                                        <b-card-title>{{statistics.name_player_2}}</b-card-title>
+                                        <cuts-report class="cuts-report-player-2" :playerCuts="statistics.player_2_cuts"></cuts-report>
                                     </b-col>
                                 </b-row>
                             </b-container>
@@ -76,6 +77,7 @@
             <b-tab title="Detalle de Juegos">
                 <b-pagination v-model="games.currentPage" :total-rows="rows" :per-page="games.perPage"></b-pagination>
                 <game v-for="(game, index) in statistics.games_report.slice(games.perPage * (games.currentPage - 1), games.perPage * games.currentPage)" 
+                    class="games-details"
                     :game="game" :key="index" 
                     :namePlayer1="statistics.name_player_1"
                     :namePlayer2="statistics.name_player_2" >
