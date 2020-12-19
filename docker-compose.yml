@@ -42,11 +42,25 @@ services:
       - 4444:4444
     volumes:
       - /dev/shm:/dev/shm
+  allure-server:
+    image: "frankescobar/allure-docker-service"
+    environment:
+      CHECK_RESULTS_EVERY_SECONDS: 1
+      KEEP_HISTORY: 1
+    ports:
+      - "5050:5050"
+    volumes:
+      - ./allure-results:/app/allure-results
+      - ./allure-reports:/app/default-reports
   ui-tests:
     build:
       context: ./
       dockerfile: uitests.Dockerfile
-    command: bash -c "/usr/wait-for-it.sh frontend:8080 && /usr/wait-for-it.sh server:5000 && /usr/wait-for-it.sh selenium-server:4444 && behave"
+    volumes:
+      - ./allure-results:/usr/src/app/allure-results
+      - ./allure-reports:/usr/src/app/default-reports
+    command: bash -c "/usr/wait-for-it.sh frontend:8080 && /usr/wait-for-it.sh server:5000 && /usr/wait-for-it.sh selenium-server:4444 && behave -f allure_behave.formatter:AllureFormatter -o ./allure-results"
+
 
 volumes:
   database-data:
