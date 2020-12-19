@@ -334,3 +334,5 @@ pnpm-debug.log*
 *.sln
 *.sw?
 ui/.editorconfig
+allure-reports
+allure-results
