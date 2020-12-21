@@ -57,3 +57,10 @@ class SimulationsRepository:
             FROM simulations
             """)
             return [row for row in cursor]
+
+    def delete_simulation(self, simulation_id):
+        with self._db_connection.cursor() as cursor:
+            cursor.execute("""
+            DELETE FROM simulations
+            WHERE id=%s
+            """, [simulation_id])

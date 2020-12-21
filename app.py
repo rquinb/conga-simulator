@@ -60,11 +60,16 @@ def make_simulation():
     task = simulate_games.delay(number_of_games, player_1_data, player_2_data)
     return flask.jsonify({}), HTTPStatus.ACCEPTED, {'Location': flask.url_for('get_task_status', task_id=task.id)}
 
+@app.route('/games-simulations/<simulation_id>', methods=['DELETE'])
+def delete_simulation(simulation_id):
+    simulations_repository.delete_simulation(simulation_id)
+    return flask.jsonify({}), HTTPStatus.NO_CONTENT
+
 
 @app.route('/games-simulations/task/<task_id>')
 def get_task_status(task_id):
     task = simulate_games.AsyncResult(task_id)
-    status = {'state': task.state, 'current_simulation': 0, 'total': 0}
+    status = {'resource_id': task_id,'state': task.state, 'current_simulation': 0, 'total': 0}
     if task.state != 'PENDING' and task.state != 'FAILURE':
         status['state'] = task.state
         status['current_simulation'] = task.info.get('current_simulation', 0)

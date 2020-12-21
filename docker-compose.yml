@@ -52,15 +52,18 @@ services:
     volumes:
       - ./allure-results:/app/allure-results
       - ./allure-reports:/app/default-reports
-  ui-tests:
+  integration-tests:
     build:
       context: ./
-      dockerfile: uitests.Dockerfile
+      dockerfile: integration_tests.Dockerfile
     volumes:
       - ./allure-results:/usr/src/app/allure-results
       - ./allure-reports:/usr/src/app/default-reports
-    command: bash -c "/usr/wait-for-it.sh frontend:8080 && /usr/wait-for-it.sh server:5000 && /usr/wait-for-it.sh selenium-server:4444 && behave -f allure_behave.formatter:AllureFormatter -o ./allure-results"
-
-
+    command: >
+        bash -c "/usr/wait-for-it.sh frontend:8080 &&
+        /usr/wait-for-it.sh server:5000 &&
+        /usr/wait-for-it.sh selenium-server:4444 &&
+        python -m pytest -v test_api/ &&
+        behave -f allure_behave.formatter:AllureFormatter -o ./allure-results"
 volumes:
   database-data:
