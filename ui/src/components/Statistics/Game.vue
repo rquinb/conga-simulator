@@ -1,7 +1,13 @@
 <template>
     <b-container>
         <b-card class="gradient-background game-card text-center shadow-lg">
-            <b-table class="gradient-background game-table" :items="game.score_evolution" :fields="scoreEvolutionTable.fields" thead-class="bg-dark text-white">
+            <b-table 
+                class="gradient-background game-table" 
+                :items="game.score_evolution" 
+                :fields="scoreEvolutionTable.fields" 
+                thead-class="bg-dark text-white"
+                @row-clicked="item=>$set(item, '_showDetails', !item._showDetails)"
+                >
                 <template #cell()="data">
                     <template v-if="data.value.cut == null">
                         <span>{{ data.value.points}}</span>
@@ -16,6 +22,13 @@
                         <span v-b-tooltip.hover title="Conga">{{data.value.points}} ♛</span>
                     </template>
                 </template>
+                <template #row-details="row">
+                    <b-list-group>
+                        <b-list-group-item v-for="(move, index) in row.item.moves" :key="index">
+                            <move :move="move" :position="parseInt(index)"></move>
+                        </b-list-group-item>
+                    </b-list-group>
+                </template>
             </b-table>
             <b-list-group flush>
                 <b-list-group-item class="gradient-background">
@@ -27,6 +40,7 @@
     </b-container>
 </template>
 <script>
+import Move from './Move'
 
 export default {
   name: 'game',
@@ -35,6 +49,9 @@ export default {
       key: Number,
       namePlayer1: String,
       namePlayer2: String
+  },
+  components: {
+      Move
   },
   data(){
       return {

@@ -7,7 +7,7 @@ class TestGameSimulation:
     SIMULATION_SUCCESS_STATUS = "SUCCESS"
     SIMULATION_FAILED_STATUS = "FAILURE"
     BASE_REQUEST_BODY = {
-                    "numberOfGames": 20,
+                    "numberOfGames": 5,
                     "player1": {
                         "name": "Test player 1",
                         "agentType": "conservative_chooser",

@@ -20,3 +20,11 @@ class CardNotFound(Exception):
 
 class EmptyListOfCards(Exception):
     pass
+
+
+class RoundFinished(Exception):
+    pass
+
+
+class InvalidPlayerName(Exception):
+    pass

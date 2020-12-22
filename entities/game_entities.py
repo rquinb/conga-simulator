@@ -3,7 +3,6 @@ from collections.abc import Sequence
 import game_exceptions
 
 
-
 class Card:
     def __init__(self, number=None, kind=None, commodin=False):
         self.number = self._set_number(number) if number else number
@@ -111,6 +110,9 @@ class Cards(Sequence):
         set_other_cards = set(other)
         return set_cards == set_other_cards
 
+    def list_of_string_represented_cards(self):
+        return [card.to_string() for card in self._cards_list]
+
 
 class CardGroup:
     COMMODIN_VALUE = 20
@@ -166,14 +168,21 @@ class Deck:
         cards.shuffle_cards()
         return cards
 
-    def retrieve_card(self):
-        if not self.cards_in_deck:
-            self.cards_in_deck = self._initialize_deck()
-            self.dropped_cards = Cards()
-        return self.cards_in_deck.drop_cards()
+    def retrieve_card(self, card=None):
+        if card is None:
+            if not self.cards_in_deck:
+                self.cards_in_deck = self._initialize_deck()
+                self.dropped_cards = Cards()
+            return self.cards_in_deck.drop_cards()
+        if card in self.dropped_cards:
+            return self.dropped_cards.drop_cards(card)
+        if card in self.cards_in_deck:
+            return self.cards_in_deck.drop_cards(card)
+        raise game_exceptions.CardNotFound
 
     def play_card(self, card):
-        self.dropped_cards.receive_card(card)
+        if card not in self.dropped_cards:
+            self.dropped_cards.receive_card(card)
 
 
 class Game:
@@ -199,3 +208,57 @@ class Cut:
 
     def to_dict(self):
         return self.__dict__
+
+
+class Score:
+    def __init__(self, name_player_1, name_player_2):
+        self.player_1 = {"name": name_player_1, "points": 0}
+        self.player_2 = {"name": name_player_2, "points": 0}
+
+    def get_score(self, player_name):
+        if self.player_1['name'] == player_name:
+            return self.player_1['points']
+        if self.player_2['name'] == player_name:
+            return self.player_2['points']
+        raise game_exceptions.InvalidPlayerName(f"Player: {player_name} is not currently playing")
+
+
+class Move:
+    def __init__(self, player_name: str, retrieved_card: Card, played_card: Card, hand: Cards, cut=None):
+        self.player_name = player_name
+        self.retrieved_card = retrieved_card
+        self.played_card = played_card
+        self.hand = hand.list_of_string_represented_cards()
+        self.cut = cut
+
+    def to_dict(self):
+        dict_representation = self.__dict__
+        dict_representation['retrieved_card'] = self.retrieved_card.to_string()
+        dict_representation['played_card'] = self.played_card.to_string()
+        dict_representation['cut'] = self.cut.kind if self.cut else self.cut
+        return dict_representation
+
+
+class Round:
+    def __init__(self):
+        self.moves = []
+        self.score = None
+        self.cut = None
+        self.winner = None
+
+    def add_move(self, move):
+        if not self.cut:
+            if isinstance(move, Move):
+                self.cut = move.cut.kind if move.cut else move.cut
+                self.winner = move.player_name if self.cut else None
+                self.moves.append(move)
+            else:
+                raise TypeError("No element of class: Move was provided")
+        else:
+            raise game_exceptions.RoundFinished("Round has already finished. Impossible to add a new move")
+
+    def register_score(self, score):
+        if isinstance(score, Score):
+            self.score = score
+        else:
+            raise TypeError("No element of class: Score was provided")

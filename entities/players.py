@@ -1,5 +1,5 @@
 import numpy as np
-from entities.game_entities import Cards, Game, Cut
+from entities.game_entities import Cards, Game, Move, Cut
 from entities.card_processors import CardsGrouper
 
 
@@ -39,7 +39,6 @@ class Player:
     def __init__(self, name):
         self.cards = Cards()
         self.name = name
-        self.score = 0
         self.winner = False
         self.cut = None
         self.played_dropped_card = False
@@ -71,12 +70,6 @@ class Player:
                                    potential_cut_type=potential_cut_type,
                                    has_value_improved=rest_value < self.rest_value)
 
-    def add_points(self, points):
-        self.score += points
-
-    def remove_points(self, points):
-        self.score -= points
-
     def play_cut(self, cut_type):
         self.cut = Cut(value=True, kind=cut_type)
 
@@ -91,30 +84,42 @@ class ConservativeMinRest(Player):
         self.max_card_number_accepted = max_card_number_accepted
         self.min_card_number_accepted = min_card_number_accepted
 
-    def _play(self, card):
+    def _play(self, card, score):
         value_analysis = self._analyze_card_impact_on_value(card)
         self.rest_value = value_analysis.rest_value
         self.cards.receive_card(card)
-        if self.rest_value < self.max_rest_for_cutting and self.score + self.rest_value < Game.MAX_SCORE:
+        if self.rest_value < self.max_rest_for_cutting and score.get_score(self.name) + self.rest_value < Game.MAX_SCORE:
             self.play_cut(value_analysis.potential_cut_type)
         return self.cards.drop_cards(value_analysis.less_valuable_card)
 
-    def make_move(self, deck):
+    def make_move(self, deck, score):
+        retrieved_card = None
+        card_to_play = None
         if deck.dropped_cards:
             candidate_card = deck.dropped_cards.drop_cards()
             is_between_acceptable_number_range = self.min_card_number_accepted <= candidate_card.number <= self.max_card_number_accepted
             analysis = self._analyze_card_impact_on_value(candidate_card)
+            retrieved_card = candidate_card
             if analysis.has_value_improved and is_between_acceptable_number_range:
-                deck.play_card(self._play(candidate_card))
+                card_to_play = self._play(retrieved_card, score)
                 self.played_dropped_card = True
+                deck.play_card(retrieved_card)
             else:
-                deck.play_card(candidate_card)
+                card_to_play = candidate_card
+                deck.play_card(retrieved_card)
         if not self.played_dropped_card:
             candidate_card = deck.retrieve_card()
             is_between_acceptable_number_range = self.min_card_number_accepted <= candidate_card.number <= self.max_card_number_accepted
             analysis = self._analyze_card_impact_on_value(candidate_card)
+            retrieved_card = candidate_card
             if analysis.has_value_improved and is_between_acceptable_number_range:
-                deck.play_card(self._play(candidate_card))
+                card_to_play = self._play(retrieved_card, score)
+                deck.play_card(retrieved_card)
             else:
-                deck.play_card(candidate_card)
-        return deck
+                card_to_play = candidate_card
+                deck.play_card(retrieved_card)
+        return deck, Move(player_name=self.name,
+                          retrieved_card=retrieved_card,
+                          played_card=card_to_play,
+                          cut=self.cut,
+                          hand=self.cards.get_copy())

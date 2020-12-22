@@ -111,7 +111,7 @@ export default {
   data(){
       return {
         games:{
-            perPage: 6,
+            perPage: 1,
             currentPage: 1,
             gamesReport: this.statistics.games_report
         }

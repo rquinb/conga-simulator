@@ -1,6 +1,6 @@
 import copy
 import numpy as np
-from entities.game_entities import Cards, Deck, Game
+from entities.game_entities import Cards, Deck, Game, Round, Score
 
 
 class GamesSimulator:
@@ -11,58 +11,74 @@ class GamesSimulator:
             games.append(self.simulate_game(player_1, player_2))
         return games
 
+    @staticmethod
+    def _give_cards_to_players(game, deck):
+        for i in range(len(game.players)):
+            game.players[i].cards = Cards()
+            for _ in range(game.CARDS_IN_HAND):
+                game.players[i].cards.receive_card(deck.retrieve_card())
+            game.players[i].rest_value = game.players[i].value_of_current_hand()
+        return game, deck
+
+    @staticmethod
+    def _find_winner(game, game_round, score):
+        winner_index = None
+        for index, player in enumerate(game.players):
+            # If some player reaches 100, they lose the game. The game also ends when a player has Conga
+            if game_round.cut == "conga_cut":
+                if game_round.winner == player.name:
+                    winner_index = index
+                else:
+                    winner_index = 0 if index == 1 else 1
+                break
+            if score.get_score(player.name) >= game.MAX_SCORE:
+                winner_index = 0 if index == 1 else 1
+                break
+        return game, winner_index
+
     def simulate_game(self, player_1, player_2):
         # Starts a new game
         game = Game(players=[copy.deepcopy(player_1), copy.deepcopy(player_2)])
+        score = Score(name_player_1=game.players[0].name, name_player_2=game.players[1].name)
         while True:
             # Give cards
             deck = Deck()
-            for i in range(len(game.players)):
-                game.players[i].cards = Cards()
-                for _ in range(game.CARDS_IN_HAND):
-                    game.players[i].cards.receive_card(deck.retrieve_card())
-                game.players[i].rest_value = game.players[i].value_of_current_hand()
-            game, deck, cut_info = self._simulate_round(game, deck)
-            for index, player in enumerate(game.players):
-                # If some player reaches 100, they lose the game. The game also ends when I player has Conga
-                if cut_info['cut_kind'] == "conga_cut":
-                    winner_index = cut_info['player']
-                    game.winner = winner_index
-                    break
-                if player.score >= game.MAX_SCORE:
-                    winner_index = 0 if index == 1 else 1
-                    game.winner = winner_index
-                    break
-            if game.winner is not None:
+            game, deck = self._give_cards_to_players(game, deck)
+            game_round, score = self._simulate_round(game, deck, score)
+            game.results.append(
+                dict(
+                    player_1={"points": game_round.score.player_1['points'], "cut": game_round.cut if game.players[0].name == game_round.winner else None},
+                    player_2={"points": game_round.score.player_2['points'], "cut": game_round.cut if game.players[1].name == game_round.winner else None},
+                    moves=[move.to_dict() for move in game_round.moves]
+                )
+            )
+            game, winner_index = self._find_winner(game, game_round, score)
+            game.winner = winner_index
+            if winner_index is not None:
                 break
         return game
 
     @staticmethod
-    def _simulate_round(game, deck):
+    def _simulate_round(game: Game, deck: Deck, score: Score):
+        game_round = Round()
         current_player = 0
         while True:
             # Starts a new move
             current_player = 0 if current_player == 1 else 1
             game.players[current_player].played_dropped_card = False
-            deck = game.players[current_player].make_move(deck)
-            if game.players[current_player].has_cut():
+            deck, move = game.players[current_player].make_move(deck, score)
+            deck.retrieve_card(move.retrieved_card)
+            deck.play_card(move.played_card)
+            game_round.add_move(move)
+            if move.cut:
                 # When a player "cuts" a step-game has finished, scores are registered and then a check is
                 # needed to figure out if some player reached the max amount of points (that means they lost)
-                game.players[0].score += game.players[0].rest_value
-                game.players[1].score += game.players[1].rest_value
-                game.results.append(
-                    dict(player_1={
-                        "points": game.players[0].score,
-                        "cut": game.players[0].cut.kind if game.players[0].cut else None
-                    }, player_2={
-                        "points": game.players[1].score,
-                        "cut": game.players[1].cut.kind if game.players[1].cut else None
-                    })
-                )
-                cut_info = {"player": current_player, "cut_kind": game.players[current_player].cut.kind}
+                score.player_1['points'] += game.players[0].rest_value
+                score.player_2['points'] += game.players[1].rest_value
+                game_round.register_score(copy.deepcopy(score))
                 game.players[current_player].cut = None
                 break
-        return game, deck, cut_info
+        return game_round, score
 
     @staticmethod
     def compute_statistics(name_player_1, name_player_2, games):
