@@ -1,3 +1,4 @@
+import copy
 import numpy as np
 from entities.game_entities import Cards, Game, Move, Cut
 from entities.card_processors import CardsGrouper
@@ -19,8 +20,8 @@ class PlayerBuilder:
         raise ValueError(f'Invalid agent type: "{agent_type}" is not an existent agent_type')
 
     @staticmethod
-    def _build_conservative_chooser(name, min_card_number_accepted, max_card_number_accepted,
-                                    max_rest_for_cutting):
+    def _build_conservative_chooser(name, min_card_number_accepted=1, max_card_number_accepted=12,
+                                    max_rest_for_cutting=10):
         return ConservativeMinRest(name=name,
                                    min_card_number_accepted=min_card_number_accepted,
                                    max_card_number_accepted=max_card_number_accepted,
@@ -46,7 +47,7 @@ class Player:
 
     def value_of_current_hand(self):
         cards_grouper = CardsGrouper()
-        return cards_grouper.group_by_games_found(self.cards).value()
+        return cards_grouper.group_by_games_found(copy.deepcopy(self.cards)).value()
 
     def _analyze_card_impact_on_value(self, card):
         max_card = None
