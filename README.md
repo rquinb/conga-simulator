@@ -1,6 +1,6 @@
 # conga-simulator
 
-This projects will experiment around the idea of:
+This project will experiment around the idea of:
 - Building a *Conga Card* Game engine
 - Creating game agents that execute strategies
 - Simulating thousands of games in order to asses strategies' effectiveness
